@@ -8,6 +8,10 @@
 #### LIVE OPEN PUBLIC SERVER: <a target="_blank" href='https://txq.matterpool.io/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1'>TXQ.MATTERPOOL.IO
 </a>
 
+
+![TXQ](https://github.com/MatterPool/TXQ/blob/master/preview.png "Bitcoin Transaction Storage Queue Service")
+
+
 - [Motivation](#motivation)
 - [Installation & Getting Started](#installation---getting-started)
 - [Database](#database)
@@ -37,8 +41,6 @@
 - [Additional Resources](#additional-resources)
 
 
-
-![TXQ](https://github.com/MatterPool/TXQ/blob/master/preview.png "Bitcoin Transaction Storage Queue Service")
 
 
 ## Motivation
