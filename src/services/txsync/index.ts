@@ -50,17 +50,13 @@ export default class TxsyncService {
   }
 
   public async setResync(txid: string) {
-
-    console.log('heree 0--- 1');
     await this.txModel.updateCompleted(
       txid,
       false
     );
-    console.log('heree 0--- 133');
     await this.txsyncModel.setResync(
       txid
     );
-    console.log('heree 0--- 14444');
   }
 
   public async updateTxsync(txid: string, sync: sync_state) {

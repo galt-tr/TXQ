@@ -2,6 +2,35 @@
 > Self-hosted Bitcoin BSV transaction indexer for application developers.
 > <a href='https://matterpool.io'>matterpool.io</a>
 
+- [TXQ: Bitcoin Transaction Storage Queue Service](#txq--bitcoin-transaction-storage-queue-service)
+  * [Motivation](#motivation)
+  * [At a glance...](#at-a-glance)
+  * [Why use TXQ?](#why-use-txq-)
+  * [Features](#features)
+    + [Single Source of Truth](#single-source-of-truth)
+    + [Automatically Sync with Miners (Merchant API)](#automatically-sync-with-miners--merchant-api-)
+    + [Self-Managed UTXO and Transaction Indexing](#self-managed-utxo-and-transaction-indexing)
+    + [Publish and Subscribe Server Sent Events (SSE)](#publish-and-subscribe-server-sent-events--sse-)
+  * [REST API Docs](#rest-api-docs)
+    + [Submit Transaction](#submit-transaction)
+    + [Get Transaction Status](#get-transaction-status)
+    + [Get Transaction Status With Topic Metadata](#get-transaction-status-with-topic-metadata)
+    + [Get Transactions for Default (null) Topic](#get-transactions-for-default--null--topic)
+    + [Get Transactions for Channel Topic](#get-transactions-for-channel-topic)
+    + [Get Output Status by txid+index](#get-output-status-by-txid-index)
+    + [Get Address Outputs](#get-address-outputs)
+    + [Get Address Unspent Outputs (UTXO)](#get-address-unspent-outputs--utxo-)
+    + [Get Scripthash Outputs](#get-scripthash-outputs)
+    + [Get Scripthash Unspent Outputs (UTXO)](#get-scripthash-unspent-outputs--utxo-)
+    + [Get Queue Stats](#get-queue-stats)
+    + [Get Dead-Letter Transactions Queue](#get-dead-letter-transactions-queue)
+    + [Force Resync of Transaction](#force-resync-of-transaction)
+  * [Server Sent Events (SSE) - COMING SOON!](#server-sent-events--sse----coming-soon-)
+  * [Installation](#installation)
+  * [Database](#database)
+  * [Configuration](#configuration)
+  * [Additional Resources](#additional-resources)
+
 ![TXQ](https://github.com/MatterPool/TXQ/blob/master/preview.png "Bitcoin Transaction Storage Queue Service")
 
 ## Motivation
@@ -87,38 +116,6 @@ Save a transaction and/or txid, attaching optional metadata. The txid must match
 
 `POST /api/v1/tx`
 
-```shell
-
-//Request:
-// Note: you can set multiple transactions in a single call
-{
-   "channel": null, // Optional channel queue name
-   "set":{
-      "94aaa2f1a7e0042ba19fbb8bb87be87ecb8d025aa88844b8bea85eb7cb2d678d":{
-        "rawtx": "0100000002af6d598d7ee12bec6b20e460e97b99d048ea6c73bab291827e42dd99ba34704d020000006a47304402203b9b01392167dfd15259d5f7782521852809a384b30f44b8009fa516a4e76fe0022006cbae89516bdb5a3c135aefaf29cdfa7545b5f2ea9d6394e8689735a040d575412102119ebe4639964590bcf358539740f8ea4b6546b8416cbbbf6de12fafd3a13d1affffffffaf6d598d7ee12bec6b20e460e97b99d048ea6c73bab291827e42dd99ba34704d010000006b483045022100bb1c98453c2ea76eee6ee17a1961a9b8b418d1a0a0ee4b1c8b19d7f45d4bba9a02201a7d259ff8203c357ba5dcdb5141f9fd2b35f167429e556c6ea90cf8d534928a412102119ebe4639964590bcf358539740f8ea4b6546b8416cbbbf6de12fafd3a13d1affffffff02000000000000000019006a026d0213706f73746420746f206d6465646464646d6f21089d0000000000001976a914161e9c31fbec37d9ecb297bf4b814c6e189dbe5288ac00000000",
-         "metadata":{
-            "title":"some title",
-            "content":"any content",
-            "url":"https://www.nintendo.com",
-            "image":"",
-            "description":"DOOOOOO"
-         },
-         "tags":[ "bitcoin", "bsv"]
-      }
-   }
-}
-
-// Response:
-// Note: you can set multiple transactions in a single call
-{
-    "status": 200,
-    "errors": [],
-    "result": [
-        "94aaa2f1a7e0042ba19fbb8bb87be87ecb8d025aa88844b8bea85eb7cb2d678d"
-    ]
-}
-```
-
 ```javascript
 
 //Request:
@@ -151,60 +148,12 @@ Save a transaction and/or txid, attaching optional metadata. The txid must match
 }
 ```
 
-
 ### Get Transaction Status
 
 `GET /api/v1/tx/94aaa2f1a7e0042ba19fbb8bb87be87ecb8d025aa88844b8bea85eb7cb2d678d`
 
 Retrieve the transaction status and metadata for the `null` default topic. `complete` will be set to `true` when the transaction is confirmed.
 
-
-```shell
-
-// Response:
-{
-  "status": 200,
-  "errors": [],
-  "result": {
-    "txid": "94aaa2f1a7e0042ba19fbb8bb87be87ecb8d025aa88844b8bea85eb7cb2d678d",
-    "rawtx": "0100000002af6d598d7ee12bec6b20e460e97b99d048ea6c73bab291827e42dd99ba34704d020000006a47304402203b9b01392167dfd15259d5f7782521852809a384b30f44b8009fa516a4e76fe0022006cbae89516bdb5a3c135aefaf29cdfa7545b5f2ea9d6394e8689735a040d575412102119ebe4639964590bcf358539740f8ea4b6546b8416cbbbf6de12fafd3a13d1affffffffaf6d598d7ee12bec6b20e460e97b99d048ea6c73bab291827e42dd99ba34704d010000006b483045022100bb1c98453c2ea76eee6ee17a1961a9b8b418d1a0a0ee4b1c8b19d7f45d4bba9a02201a7d259ff8203c357ba5dcdb5141f9fd2b35f167429e556c6ea90cf8d534928a412102119ebe4639964590bcf358539740f8ea4b6546b8416cbbbf6de12fafd3a13d1affffffff02000000000000000019006a026d0213706f73746420746f206d6465646464646d6f21089d0000000000001976a914161e9c31fbec37d9ecb297bf4b814c6e189dbe5288ac00000000",
-    "h": "00000000000000000324d7ada9f810f08b254dffce4786bc4cf30374ee23a4db",
-    "i": 640259,
-    "send": null,
-    "status": {
-      "valid": true,
-      "payload": {
-        "minerId": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087",
-        "blockHash": "00000000000000000324d7ada9f810f08b254dffce4786bc4cf30374ee23a4db",
-        "timestamp": "2020-06-21T01:02:42.952Z",
-        "apiVersion": "0.1.0",
-        "blockHeight": 640259,
-        "returnResult": "success",
-        "confirmations": 25,
-        "resultDescription": "",
-        "txSecondMempoolExpiry": 0
-      },
-      "encoding": "UTF-8",
-      "mimetype": "application/json",
-      "publicKey": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087",
-      "signature": "30440220281148a447cf041fcebfeba8bba0ad022299d321a6dc7641b3ad54239f505eaf02207cffd042ebb18285e7160429fe51fb9bcac005b04469877248afdc509e41de61"
-    },
-    "completed": true,
-    "updated_at": 1592765256,
-    "created_at": 1592697895,
-    "channel": "",
-    "metadata":{
-        "title":"some title",
-        "content":"any content",
-        "url":"https://www.nintendo.com",
-        "image":"",
-        "description":"DOOOOOO"
-    },
-    "tags":[ "bitcoin", "bsv"]
-    "extracted": {}
-  }
-}
-```
 
 ```javascript
 
@@ -259,53 +208,6 @@ Retrieve the transaction status and metadata for the `null` default topic. `comp
 
 Retrieve the transaction status and metadata for the `somechanneltopic` default topic. `complete` will be set to `true` when the transaction is confirmed.
 
-```shell
-
-// Response:
-{
-  "status": 200,
-  "errors": [],
-  "result": {
-    "txid": "94aaa2f1a7e0042ba19fbb8bb87be87ecb8d025aa88844b8bea85eb7cb2d678d",
-    "rawtx": "0100000002af6d598d7ee12bec6b20e460e97b99d048ea6c73bab291827e42dd99ba34704d020000006a47304402203b9b01392167dfd15259d5f7782521852809a384b30f44b8009fa516a4e76fe0022006cbae89516bdb5a3c135aefaf29cdfa7545b5f2ea9d6394e8689735a040d575412102119ebe4639964590bcf358539740f8ea4b6546b8416cbbbf6de12fafd3a13d1affffffffaf6d598d7ee12bec6b20e460e97b99d048ea6c73bab291827e42dd99ba34704d010000006b483045022100bb1c98453c2ea76eee6ee17a1961a9b8b418d1a0a0ee4b1c8b19d7f45d4bba9a02201a7d259ff8203c357ba5dcdb5141f9fd2b35f167429e556c6ea90cf8d534928a412102119ebe4639964590bcf358539740f8ea4b6546b8416cbbbf6de12fafd3a13d1affffffff02000000000000000019006a026d0213706f73746420746f206d6465646464646d6f21089d0000000000001976a914161e9c31fbec37d9ecb297bf4b814c6e189dbe5288ac00000000",
-    "h": "00000000000000000324d7ada9f810f08b254dffce4786bc4cf30374ee23a4db",
-    "i": 640259,
-    "send": null,
-    "status": {
-      "valid": true,
-      "payload": {
-        "minerId": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087",
-        "blockHash": "00000000000000000324d7ada9f810f08b254dffce4786bc4cf30374ee23a4db",
-        "timestamp": "2020-06-21T01:02:42.952Z",
-        "apiVersion": "0.1.0",
-        "blockHeight": 640259,
-        "returnResult": "success",
-        "confirmations": 25,
-        "resultDescription": "",
-        "txSecondMempoolExpiry": 0
-      },
-      "encoding": "UTF-8",
-      "mimetype": "application/json",
-      "publicKey": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087",
-      "signature": "30440220281148a447cf041fcebfeba8bba0ad022299d321a6dc7641b3ad54239f505eaf02207cffd042ebb18285e7160429fe51fb9bcac005b04469877248afdc509e41de61"
-    },
-    "completed": true,
-    "updated_at": 1592765256,
-    "created_at": 1592697895,
-    "channel": "",
-    "metadata":{
-        "title":"some title",
-        "content":"any content",
-        "url":"https://www.nintendo.com",
-        "image":"",
-        "description":"DOOOOOO"
-    },
-    "tags":[ "bitcoin", "bsv"]
-    "extracted": {}
-  }
-}
-```
-
 ```javascript
 
 // Response:
@@ -353,63 +255,11 @@ Retrieve the transaction status and metadata for the `somechanneltopic` default 
 }
 ```
 
-### Get Transactions for Default(null) Topic
+### Get Transactions for Default (null) Topic
 
 `GET /api/v1/queue?pretty=1&rawtx=1&offset=0`
 
 Retrieve the transactions from most recently added in the default `null` channel queue
-
-```shell
-
-// Response:
-{
-  "status": 200,
-  "errors": [],
-  "result": [
-    {
-      "txid": "4d7034ba99dd427e8291b2ba736cea48d0997be960e4206bec2be17e8d596daf",
-      "i": 640259,
-      "h": "00000000000000000324d7ada9f810f08b254dffce4786bc4cf30374ee23a4db",
-      "rawtx": "0100000001f743dd880dde880b0e5baf3403352c25005ad94fcafc79abc35d2ee52a212bd4020000006b483045022100aff74f1335bbc691cc62c7405a77c09744626363397dc47cfe97e235e5a0143102203357855791f03b4ae3332808f9964af8f24e0b63e7bd32f6788f77e2d2da7b50412102119ebe4639964590bcf358539740f8ea4b6546b8416cbbbf6de12fafd3a13d1affffffff03000000000000000019006a026d0213706f73746420746f206d6465646464646d6f2168100000000000001976a914161e9c31fbec37d9ecb297bf4b814c6e189dbe5288acc58d0000000000001976a914161e9c31fbec37d9ecb297bf4b814c6e189dbe5288ac00000000",
-      "send": null,
-      "status": {
-        "valid": true,
-        "payload": {
-          "minerId": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087",
-          "blockHash": "00000000000000000324d7ada9f810f08b254dffce4786bc4cf30374ee23a4db",
-          "timestamp": "2020-06-21T01:02:41.139Z",
-          "apiVersion": "0.1.0",
-          "blockHeight": 640259,
-          "returnResult": "success",
-          "confirmations": 25,
-          "resultDescription": "",
-          "txSecondMempoolExpiry": 0
-        },
-        "encoding": "UTF-8",
-        "mimetype": "application/json",
-        "publicKey": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087",
-        "signature": "304402204e4d4d8e03182a80608f7a583db008a783d40895a67339e3576b9abf09e6992c022047b5eb1de9103ed628f4accfce632755921527f3306831d346f0936c5fcd6026"
-      },
-      "completed": true,
-      "updated_at": 1592701751,
-      "created_at": 1592701361,
-      "channel": "",
-      "metadata": {
-        "url": "url",
-        "image": "adfsfsdfsdfdf",
-        "title": "abc",
-        "content": "content123",
-        "description": "DOOOOOO"
-      },
-      "tags": [
-        "ckitty",
-        "cat"
-      ],
-      "extracted": {}
-    }
-  ]
-}
-```
 
 ```javascript
 
@@ -469,57 +319,6 @@ Retrieve the transactions from most recently added in the default `null` channel
 
 Retrieve the transactions from most recently added in the default `null` channel queue
 
-```shell
-
-// Response:
-{
-  "status": 200,
-  "errors": [],
-  "result": [
-    {
-      "txid": "dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293",
-      "i": 640464,
-      "h": "000000000000000000e3564e4a8d9be13fb24cb21d546cb999d514c650c3b2dc",
-      "rawtx": "0200000003c3be676ae826227bcff47e605bdffff85c4aa42e3c868e4dfad9a97e2244aef5000000006a4730440220692e3f1fb99e26e494c8e446621584564e67e1388b06e7be769f3adde6b5c3c60220148e97efbc41dda03d80de2249be68c332b12ff7148e61847a72e93eee2e06864121037e7bcc2cdc24646fd8e320c74f156367027c1b67564c0dee420262eca71fca56feffffffd8fa56930181c8431c4d7d503d8b5d5948f22e4c9311d3fb19847b2318dd227d010000006b483045022100f5b8bf9905e5ec051573fd522c522295a5944e460255869dba427f64e6a094d3022032cbb4814b62daf1647570a35903f211143e3d82a8446986761612910936b95c4121037e7bcc2cdc24646fd8e320c74f156367027c1b67564c0dee420262eca71fca56feffffff1c2067e5d0212cc015e3ece148c218008a44eff32a5f6eb4acc238477d9e034a010000006a47304402205d525e4846f964c69c8d830fd9a1823e78ba3085d95405071e822136576326a40220676a18f3e0eb77ff1e9a2b91d54a61cc9642745e2dd55dd0564122010db2266f4121037e7bcc2cdc24646fd8e320c74f156367027c1b67564c0dee420262eca71fca56feffffff022f130873070000001976a914a1f93cb1d124a82f8f86b06ef97a4fd6d77c04e288aca6386727000000001976a9140ca78f443c75e178674bd40337e9fe7f8745cbc088ac9f860100",
-      "send": null,
-      "status": {
-        "valid": true,
-        "payload": {
-          "minerId": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087",
-          "blockHash": "000000000000000000e3564e4a8d9be13fb24cb21d546cb999d514c650c3b2dc",
-          "timestamp": "2020-06-22T10:05:15.165Z",
-          "apiVersion": "0.1.0",
-          "blockHeight": 640464,
-          "returnResult": "success",
-          "confirmations": 1,
-          "resultDescription": "",
-          "txSecondMempoolExpiry": 0
-        },
-        "encoding": "UTF-8",
-        "mimetype": "application/json",
-        "publicKey": "0211ccfc29e3058b770f3cf3eb34b0b2fd2293057a994d4d275121be4151cdf087",
-        "signature": "304402201029251d228486f7c2b100fb1fd519053b71480c15332d55e694ebb60baa906d02205a61406d5b4c55864381a4053484739fb01ce36f49179463731be442048863b1"
-      },
-      "completed": true,
-      "updated_at": 1592820315,
-      "created_at": 1592820315,
-      "channel": "somechanneltopic",
-      "metadata": {
-        "url": "https://www.nintendo.com",
-        "image": "",
-        "title": "some title",
-        "content": "any content",
-        "description": "DOOOOOO"
-      },
-      "tags": [
-        "bitcoin",
-        "bsv"
-      ],
-      "extracted": {}
-    }
-  ]
-}
-```
 
 ```javascript
 
@@ -579,25 +378,6 @@ Retrieve the transactions from most recently added in the default `null` channel
 
 Retrieve spent status of a txoutput (txid + index)
 
-```shell
-
-{
-  "status": 200,
-  "errors": [],
-  "result": {
-    "txid": "dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293",
-    "index": 0,
-    "script": "76a914a1f93cb1d124a82f8f86b06ef97a4fd6d77c04e288ac",
-    "address": "1FmSNBWW2m6d6FDUWxDjaJo9jhNAs9Pekr",
-    "scripthash": "ee7beac2fcc315b37f190530d743769f255b1d413edd6e51bbc003022753f909",
-    "satoshis": 31994680111,
-    "is_receive": true,
-    "spend_txid": null,
-    "spend_index": null
-  }
-}
-```
-
 ```javascript
 {
   "status": 200,
@@ -616,31 +396,12 @@ Retrieve spent status of a txoutput (txid + index)
 }
 ```
 
-### Get Outputs by Address
+### Get Address Outputs
 
 `GET /api/v1/txout/address/:address?pretty=1&offset=0`
 
 Retrieve outputs involving address. Note: receives are tracked only for now.
 
-```shell
-{
-  "status": 200,
-  "errors": [],
-  "result": [
-    {
-      "txid": "dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293",
-      "index": 0,
-      "script": "76a914a1f93cb1d124a82f8f86b06ef97a4fd6d77c04e288ac",
-      "address": "1FmSNBWW2m6d6FDUWxDjaJo9jhNAs9Pekr",
-      "scripthash": "ee7beac2fcc315b37f190530d743769f255b1d413edd6e51bbc003022753f909",
-      "satoshis": 31994680111,
-      "is_receive": true,
-      "spend_txid": null,
-      "spend_index": null
-    }
-  ]
-}
-```
 
 ```javascript
 {
@@ -662,30 +423,12 @@ Retrieve outputs involving address. Note: receives are tracked only for now.
 }
 ```
 
-### Get Unspent Outputs (UTXO) by Address
+### Get Address Unspent Outputs (UTXO)
 
 `GET /api/v1/txout/address/:address/utxo?pretty=1&offset=0`
 
 Retrieve outputs involving address. Note: receives are tracked only for now.
 
-```shell
-{
-  "status": 200,
-  "errors": [],
-  "result": [
-    {
-      "txid": "dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293",
-      "vout": 0,
-      "outputIndex": 0,
-      "value": 31994680111,
-      "satoshis": 31994680111,
-      "address": "1FmSNBWW2m6d6FDUWxDjaJo9jhNAs9Pekr",
-      "scripthash": "ee7beac2fcc315b37f190530d743769f255b1d413edd6e51bbc003022753f909"
-    }
-  ]
-}
-```
-
 ```javascript
 {
   "status": 200,
@@ -704,31 +447,12 @@ Retrieve outputs involving address. Note: receives are tracked only for now.
 }
 ```
 
-### Get Outputs by Scripthash
+### Get Scripthash Outputs
 
 `GET /api/v1/txout/scripthash/:scripthash?pretty=1&offset=0`
 
 Retrieve outputs involving scripthash. Note: receives are tracked only for now.
 
-```shell
-{
-  "status": 200,
-  "errors": [],
-  "result": [
-    {
-      "txid": "dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293",
-      "index": 0,
-      "script": "76a914a1f93cb1d124a82f8f86b06ef97a4fd6d77c04e288ac",
-      "address": "1FmSNBWW2m6d6FDUWxDjaJo9jhNAs9Pekr",
-      "scripthash": "ee7beac2fcc315b37f190530d743769f255b1d413edd6e51bbc003022753f909",
-      "satoshis": 31994680111,
-      "is_receive": true,
-      "spend_txid": null,
-      "spend_index": null
-    }
-  ]
-}
-```
 
 ```javascript
 {
@@ -750,29 +474,12 @@ Retrieve outputs involving scripthash. Note: receives are tracked only for now.
 }
 ```
 
-### Get Unspent Outputs (UTXO) by Scripthash
+### Get Scripthash Unspent Outputs (UTXO)
 
 `GET /api/v1/txout/scripthash/:scripthash/utxo?pretty=1&offset=0`
 
 Retrieve outputs involving scripthash. Note: receives are tracked only for now.
 
-```shell
-{
-  "status": 200,
-  "errors": [],
-  "result": [
-    {
-      "txid": "dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293",
-      "vout": 0,
-      "outputIndex": 0,
-      "value": 31994680111,
-      "satoshis": 31994680111,
-      "address": "1FmSNBWW2m6d6FDUWxDjaJo9jhNAs9Pekr",
-      "scripthash": "ee7beac2fcc315b37f190530d743769f255b1d413edd6e51bbc003022753f909"
-    }
-  ]
-}
-```
 
 ```javascript
 {
@@ -792,10 +499,75 @@ Retrieve outputs involving scripthash. Note: receives are tracked only for now.
 }
 ```
 
+### Get Queue Stats
 
-## Server Sent Events (SSE)
+`GET /api/v1/queue/stats`
 
-`todo: see src/api/*`
+Retrieve queue settings and general stats.
+
+```javascript
+{
+  "status": 200,
+  "errors": [],
+  "result": {
+    "config": {
+      "concurrency": 3,
+      "maxDelay": 600000,
+      "numOfAttempts": 20,
+      "startingDelay": 60000,
+      "jitter": "none",
+      "timeMultiple": 2,
+      "checkPendingTimeSec": 60
+    },
+    "stats": {
+      "tasks_pending": 0,
+      "tasks_enq": 0,
+      "tasks_dup": 0,
+      "tasks_expired": 0,
+      "tasks_completed": 0
+    }
+  }
+}
+```
+
+### Get Dead-Letter Transactions Queue
+
+`GET /api/v1/queue/dlq`
+
+Retrieve any transaction that were unable to be synced (ie: `completed: false`) after the max `numOfAttempts` was reached.
+All transactions expired get tagged in the default dead-letter queue called `dlq`
+
+A transaction that is expired, will not be retried unless it is forced to `resync` and start the retry again.
+
+```javascript
+{
+  "status": 200,
+  "errors": [],
+  "result": [ 'dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293' ]
+}
+```
+
+### Force Resync of Transaction
+
+`POST /api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293/resync`
+
+Use this method to restart any transactions found in the dead-letter queue (dlq).
+
+Sets `tx.completed = false` and resets `sync = 1` (pending) and kick starts the sync of the send and status of transaction.
+
+```javascript
+{
+  "status": 200,
+  "errors": [],
+  "result": {} // Success is empty
+}
+```
+
+
+
+
+## Server Sent Events (SSE) - COMING SOON!
+
 
 ## Installation
 
