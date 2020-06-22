@@ -8,7 +8,7 @@ Group=root
 Restart=always
 KillSignal=SIGQUIT
 WorkingDirectory=/home/ubuntu/txq
-ExecStart=/home/ubuntu/.nvm/versions/node/v12.13.0/bin/node ./build/bootstrap/index.js
+ExecStart=/home/ubuntu/.nvm/versions/node/v10.19.0/bin/node ./build/bootstrap/index.js
 EnvironmentFile=/home/ubuntu/txq/.env
 LimitNOFILE=400000
 [Install]

@@ -35,6 +35,8 @@ node_modules/
 # Output of 'npm pack'
 *.tgz
 
+.DS_Store
+
 # dotenv environment variables file
 .env
 
@@ -54,4 +56,4 @@ excludefiles.txt
 
 .env.prod
 
-dist/ 
+dist/

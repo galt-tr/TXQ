@@ -43,9 +43,13 @@ async function startServer() {
   let app = express();
 
   await middlewareLoader(app);
-
   let server = createServer(app);
 
+  app.get('/', function(req, res) {
+    res.json({
+      txq: 'hello'
+    })
+  });
   server.listen(Config.api.port);
 
   process.on('unhandledRejection', handleExceptions);
