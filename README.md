@@ -8,8 +8,13 @@
 #### LIVE OPEN PUBLIC SERVER: <a target="_blank" href='https://txq.matterpool.io/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1'>TXQ.MATTERPOOL.IO
 </a>
 
+
 - [TXQ: Bitcoin Transaction Storage Queue Service](#txq--bitcoin-transaction-storage-queue-service)
+      - [LIVE OPEN PUBLIC SERVER: <a target="_blank" href='https://txq.matterpool.io/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1'>TXQ.MATTERPOOL.IO](#live-open-public-server---a-target---blank--href--https---txqmatterpoolio-api-v1-tx-dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293-pretty-1--txqmatterpoolio)
   * [Motivation](#motivation)
+  * [Installation & Getting Started](#installation---getting-started)
+  * [Database](#database)
+  * [Configuration](#configuration)
   * [At a glance...](#at-a-glance)
   * [Why use TXQ?](#why-use-txq-)
   * [Features](#features)
@@ -32,11 +37,10 @@
     + [Get Dead-Letter Transactions Queue](#get-dead-letter-transactions-queue)
     + [Force Resync of Transaction](#force-resync-of-transaction)
   * [Server Sent Events (SSE) - COMING SOON!](#server-sent-events--sse----coming-soon-)
-  * [Installation](#installation)
-  * [Database](#database)e
-  * [Configuration](#configuration)
   * [Additional Resources](#additional-resources)
- 
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 
 ![TXQ](https://github.com/MatterPool/TXQ/blob/master/preview.png "Bitcoin Transaction Storage Queue Service")
 
@@ -52,6 +56,100 @@ It's easy and extremely cost effective for services to simply index their own Bi
 
 TXQ makes it easy for developers to keep their entire application transaction history in their direct control or even on premise.
 At the same time, transaction sending is now "fire and forget" annd synchronization with miners happens automatically via Merchant API.
+
+
+## Installation & Getting Started
+
+Requirements:
+- Node 10.19+
+- Postgres 10.6+
+
+[NodeJS](https://nodejs.org/en/)
+
+Install global TypeScript and TypeScript Node
+
+```
+npm install -g typescript ts-node
+```
+
+**Setup and Run**
+
+Copy `.env.example` to `.env` for productionn environment. See database instructions below.
+
+Install deps:
+
+```
+npm install
+```
+
+Developer testing:
+```
+npm run start-dev
+```
+
+Production build:
+
+```
+npm run build
+```
+
+Production run:
+```
+node ./dist/bootstrap/index.js
+```
+
+Testing:
+```
+jest
+```
+
+## Database
+
+Initial Schema:
+
+`src/database/202006130000-init-schema.sql`
+
+Migrations:
+
+- None
+
+## Configuration
+
+See `cfg/index.ts` for available options.
+
+```javascript
+{
+    // ...
+    queue: {
+        jitter: 'none',                         // 'full' or 'none'
+        timeMultiple: 2,                        // Exponential back off multiple
+        concurrency: 3,                         // Max number of concurrent requests to sync tx status from merchantapi
+        startingDelay: 1000 * 60,               // Initial start delay before first re-check
+        maxDelay: 1000 * 60 * 10,               // Max back off time. 10 Minutes is max
+        numOfAttempts: 15,                      // Max attempts before being put into 'dlq'
+        checkPendingTimeSec: 60                 // How many seconds to rescan for missed tasks
+    },
+    merchantapi: {
+        response_logging: true,                             // Whether to log every request and response from merchantapi's
+        endpoints: [
+            {
+                name: 'matterpool',
+                url: 'https://merchantapi.mattterpool.io'
+            },
+            {
+                name: 'mempool',
+                url: 'https://merchantapi.mempool.com'
+            },
+            {
+                name: 'taal',
+                url: 'https://merchantapi.taal.com'
+            }
+        ]
+    },
+    //...
+```
+
+
 
 ## At a glance...
 
@@ -581,101 +679,8 @@ Sets `tx.completed = false` and resets `sync = 1` (pending) and kick starts the 
 
 
 
-
 ## Server Sent Events (SSE) - COMING SOON!
 
-
-## Installation
-
-Requirements:
-- Node 10.19+
-- Postgres 10.6+
-
-[NodeJS](https://nodejs.org/en/)
-
-Install global TypeScript and TypeScript Node
-
-```
-npm install -g typescript ts-node
-```
-
-**Setup and Run**
-
-Copy `.env.example` to `.env` for productionn environment. See database instructions below.
-
-Install deps:
-
-```
-npm install
-```
-
-Developer testing:
-```
-npm run start-dev
-```
-
-Production build:
-
-```
-npm run build
-```
-
-Production run:
-```
-node ./dist/bootstrap/index.js
-```
-
-Testing:
-```
-jest
-```
-
-## Database
-
-Initial Schema:
-
-`src/database/202006130000-init-schema.sql`
-
-Migrations:
-
-- None
-
-## Configuration
-
-See `cfg/index.ts` for available options.
-
-```javascript
-{
-    // ...
-    queue: {
-        jitter: 'none',                         // 'full' or 'none'
-        timeMultiple: 2,                        // Exponential back off multiple
-        concurrency: 3,                         // Max number of concurrent requests to sync tx status from merchantapi
-        startingDelay: 1000 * 60,               // Initial start delay before first re-check
-        maxDelay: 1000 * 60 * 10,               // Max back off time. 10 Minutes is max
-        numOfAttempts: 15,                      // Max attempts before being put into 'dlq'
-        checkPendingTimeSec: 60                 // How many seconds to rescan for missed tasks
-    },
-    merchantapi: {
-        response_logging: true,                             // Whether to log every request and response from merchantapi's
-        endpoints: [
-            {
-                name: 'matterpool',
-                url: 'https://merchantapi.mattterpool.io'
-            },
-            {
-                name: 'mempool',
-                url: 'https://merchantapi.mempool.com'
-            },
-            {
-                name: 'taal',
-                url: 'https://merchantapi.taal.com'
-            }
-        ]
-    },
-
-    //...
-```
 
 ## Additional Resources
 

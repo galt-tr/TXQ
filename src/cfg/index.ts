@@ -35,8 +35,16 @@ const config: IConfig = {
     response_logging: true,                  // Whether to log every request and response from merchantapi's
     endpoints: [
       {
+          name: 'mempool',
+          url: 'https://merchantapi.mempool.com'
+      },
+      {
+          name: 'taal',
+          url: 'https://merchantapi.taal.com'
+      },
+      {
         name: 'matterpool',
-        url: 'https://merchantapi.matterpool.io'
+        url: 'https://merchantapi.mattterpool.io'
       }
     ]
   },
