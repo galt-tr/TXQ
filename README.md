@@ -39,10 +39,6 @@
   * [Server Sent Events (SSE) - COMING SOON!](#server-sent-events--sse----coming-soon-)
   * [Additional Resources](#additional-resources)
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
-
-![TXQ](https://github.com/MatterPool/TXQ/blob/master/preview.png "Bitcoin Transaction Storage Queue Service")
 
 ## Motivation
 
