@@ -2,6 +2,9 @@
 > Self-hosted Bitcoin BSV transaction indexer for application developers.
 > <a href='https://matterpool.io'>matterpool.io</a>
 
+Live demo:
+<a target="_blank" href='https://txq.matterpool.io/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1'>GET Transaction</a>
+
 - [TXQ: Bitcoin Transaction Storage Queue Service](#txq--bitcoin-transaction-storage-queue-service)
   * [Motivation](#motivation)
   * [At a glance...](#at-a-glance)
@@ -11,13 +14,13 @@
     + [Automatically Sync with Miners (Merchant API)](#automatically-sync-with-miners--merchant-api-)
     + [Self-Managed UTXO and Transaction Indexing](#self-managed-utxo-and-transaction-indexing)
     + [Publish and Subscribe Server Sent Events (SSE)](#publish-and-subscribe-server-sent-events--sse-)
-  * [REST API Docs](#rest-api-docs)
+  * [REST API Documentation](#rest-api-documentation)
     + [Submit Transaction](#submit-transaction)
     + [Get Transaction Status](#get-transaction-status)
     + [Get Transaction Status With Topic Metadata](#get-transaction-status-with-topic-metadata)
     + [Get Transactions for Default (null) Topic](#get-transactions-for-default--null--topic)
     + [Get Transactions for Channel Topic](#get-transactions-for-channel-topic)
-    + [Get Output Status by txid+index](#get-output-status-by-txid-index)
+    + [Get Outpoint Spend Status](#get-outpoint-spend-status)
     + [Get Address Outputs](#get-address-outputs)
     + [Get Address Unspent Outputs (UTXO)](#get-address-unspent-outputs--utxo-)
     + [Get Scripthash Outputs](#get-scripthash-outputs)
@@ -27,9 +30,12 @@
     + [Force Resync of Transaction](#force-resync-of-transaction)
   * [Server Sent Events (SSE) - COMING SOON!](#server-sent-events--sse----coming-soon-)
   * [Installation](#installation)
-  * [Database](#database)
+  * [Database](#database)e
   * [Configuration](#configuration)
   * [Additional Resources](#additional-resources)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 
 ![TXQ](https://github.com/MatterPool/TXQ/blob/master/preview.png "Bitcoin Transaction Storage Queue Service")
 
@@ -59,18 +65,21 @@ At the same time, transaction sending is now "fire and forget" annd synchronizat
 *Enterprise ready*
 
 **Relational Database (Postgres)**
-
-- Using as ACID compliant *"NoSQL"* (join-less) datastore and leveraging `jsonb`
+- Using as **ACID compliant "NoSQL" (join-less)** datastore and leveraging `jsonb`
 - Powerful custom indexes for precisely what your service requires.
 
-**REST API and Real-time Sockets**
+**Easy to integrate API and Real-time Sockets**
 - TXQ exposes a simple, yet powerful API for storing, sending and streaming transactions to peers
-- Server-Sent Events (SSE)
+- Server-Sent Events (SSE) - Cominng soon!
 
 **Open Source and Schema**
 - MIT License
 - Domain Driven Design Architecture (Use Cases)
 - Simple and extendible open SQL database schema
+
+**Enterprise and Paid Hosting**
+- <a href='https://matterpool.io'>matterpool.io</a>
+- <a href='mailto:attila@matterpool.io?subject=TXQ'>Email Us</a>
 
 ## Why use TXQ?
 
@@ -107,8 +116,14 @@ Your businness always has transaction history and UTXOs ready-at-hand and can ea
 
 Easily connect TXQ with your other services via SSE sockets for subscribing to new transactions and events in real-time.
 
+## REST API Documentation
 
-## REST API Docs
+Try it at: `https://txq.matterpool.io`
+
+Example:
+
+<a href='https://txq.matterpool.io/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1'>https://txq.matterpool.io/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1</a>
+
 
 ### Submit Transaction
 
@@ -372,7 +387,7 @@ Retrieve the transactions from most recently added in the default `null` channel
 }
 ```
 
-### Get Output Status by txid+index
+### Get Outpoint Spend Status
 
 `GET /api/v1/txout/txid/:txid/:index?pretty=1`
 
@@ -664,3 +679,7 @@ See `cfg/index.ts` for available options.
 ## Additional Resources
 
 <a href='https://developers.matterpool.io'>MATTERPOOL DEVELOPER DOCUMENTATION</a>
+
+<a href='https://matterpool.io'>matterpool.io</a>
+
+<a href='mailto:attila@matterpool.io?subject=Hello TXQ'>Say Hello</a>
