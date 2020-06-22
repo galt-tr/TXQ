@@ -8,36 +8,37 @@
 #### LIVE OPEN PUBLIC SERVER: <a target="_blank" href='https://txq.matterpool.io/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1'>TXQ.MATTERPOOL.IO
 </a>
 
+- [Motivation](#motivation)
+- [Installation & Getting Started](#installation---getting-started)
+- [Database](#database)
+- [Configuration](#configuration)
+- [TXQ Design Overview...](#txq-design-overview)
+- [Why use TXQ?](#why-use-txq-)
+- [Features](#features)
+  * [Single Source of Truth](#single-source-of-truth)
+  * [Automatically Sync with Miners (Merchant API)](#automatically-sync-with-miners--merchant-api-)
+  * [Self-Managed UTXO and Transaction Indexing](#self-managed-utxo-and-transaction-indexing)
+  * [Publish and Subscribe Server Sent Events (SSE)](#publish-and-subscribe-server-sent-events--sse-)
+- [REST API Documentation](#rest-api-documentation)
+  * [Submit Transaction](#submit-transaction)
+  * [Get Transaction Status](#get-transaction-status)
+  * [Get Transaction Status With Topic Metadata](#get-transaction-status-with-topic-metadata)
+  * [Get Transactions for Default (null) Topic](#get-transactions-for-default--null--topic)
+  * [Get Transactions for Channel Topic](#get-transactions-for-channel-topic)
+  * [Get Outpoint Spend Status](#get-outpoint-spend-status)
+  * [Get Address Outputs](#get-address-outputs)
+  * [Get Address Unspent Outputs (UTXO)](#get-address-unspent-outputs--utxo-)
+  * [Get Scripthash Outputs](#get-scripthash-outputs)
+  * [Get Scripthash Unspent Outputs (UTXO)](#get-scripthash-unspent-outputs--utxo-)
+  * [Get Queue Stats](#get-queue-stats)
+  * [Get Dead-Letter Transactions Queue](#get-dead-letter-transactions-queue)
+  * [Force Resync of Transaction](#force-resync-of-transaction)
+- [Server Sent Events (SSE) - COMING SOON!](#server-sent-events--sse----coming-soon-)
+- [Additional Resources](#additional-resources)
 
-- [TXQ: Bitcoin Transaction Storage Queue Service](#txq--bitcoin-transaction-storage-queue-service)
-      - [LIVE OPEN PUBLIC SERVER: <a target="_blank" href='https://txq.matterpool.io/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1'>TXQ.MATTERPOOL.IO](#live-open-public-server---a-target---blank--href--https---txqmatterpoolio-api-v1-tx-dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293-pretty-1--txqmatterpoolio)
-  * [Motivation](#motivation)
-  * [Installation & Getting Started](#installation---getting-started)
-  * [Database](#database)
-  * [Configuration](#configuration)
-  * [At a glance...](#at-a-glance)
-  * [Why use TXQ?](#why-use-txq-)
-  * [Features](#features)
-    + [Single Source of Truth](#single-source-of-truth)
-    + [Automatically Sync with Miners (Merchant API)](#automatically-sync-with-miners--merchant-api-)
-    + [Self-Managed UTXO and Transaction Indexing](#self-managed-utxo-and-transaction-indexing)
-    + [Publish and Subscribe Server Sent Events (SSE)](#publish-and-subscribe-server-sent-events--sse-)
-  * [REST API Documentation](#rest-api-documentation)
-    + [Submit Transaction](#submit-transaction)
-    + [Get Transaction Status](#get-transaction-status)
-    + [Get Transaction Status With Topic Metadata](#get-transaction-status-with-topic-metadata)
-    + [Get Transactions for Default (null) Topic](#get-transactions-for-default--null--topic)
-    + [Get Transactions for Channel Topic](#get-transactions-for-channel-topic)
-    + [Get Outpoint Spend Status](#get-outpoint-spend-status)
-    + [Get Address Outputs](#get-address-outputs)
-    + [Get Address Unspent Outputs (UTXO)](#get-address-unspent-outputs--utxo-)
-    + [Get Scripthash Outputs](#get-scripthash-outputs)
-    + [Get Scripthash Unspent Outputs (UTXO)](#get-scripthash-unspent-outputs--utxo-)
-    + [Get Queue Stats](#get-queue-stats)
-    + [Get Dead-Letter Transactions Queue](#get-dead-letter-transactions-queue)
-    + [Force Resync of Transaction](#force-resync-of-transaction)
-  * [Server Sent Events (SSE) - COMING SOON!](#server-sent-events--sse----coming-soon-)
-  * [Additional Resources](#additional-resources)
+
+
+![TXQ](https://github.com/MatterPool/TXQ/blob/master/preview.png "Bitcoin Transaction Storage Queue Service")
 
 
 ## Motivation
@@ -53,6 +54,7 @@ It's easy and extremely cost effective for services to simply index their own Bi
 TXQ makes it easy for developers to keep their entire application transaction history in their direct control or even on premise.
 At the same time, transaction sending is now "fire and forget" annd synchronization with miners happens automatically via Merchant API.
 
+![TXQ architecture](https://github.com/MatterPool/TXQ/blob/master/TXQ.png "Bitcoin Transaction Storage Queue Service")
 
 ## Installation & Getting Started
 
@@ -145,9 +147,7 @@ See `cfg/index.ts` for available options.
     //...
 ```
 
-
-
-## At a glance...
+## TXQ Design Overview...
 
 ![TXQ architecture](https://github.com/MatterPool/TXQ/blob/master/TXQ.png "Bitcoin Transaction Storage Queue Service")
 
