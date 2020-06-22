@@ -2,13 +2,15 @@
 >
 ><a href='https://matterpool.io'>matterpool.io</a>
 
+ ![TXQ architecture](https://github.com/MatterPool/TXQ/blob/master/TXQ.png "Bitcoin Transaction Storage Queue Service")
+
 ## Motivation
 
 In order for Bitcoin SV apps to scale efficiently as traditional web services, apps must communicate directly with each other where possible and not rely on extra intermediaries.
 
 Not all Bitcoin miners or transaction processors will maintain a full transaction index for public consumption. Some will instead opt to run so called "transaction prunning" nodes and instead specialize in other ways than offering data storage and indexing services.
 
-TXQ decouples you from miners and any single service provider.
+**TXQ decouples you from miners and any specific service providers**
 
 It's easy and extremely cost effective for services to simply index their own Bitcoin transactions and have the "single source of truth" be ready at hand and according to their backup needs.
 
@@ -26,23 +28,25 @@ At the same time, transaction sending is now "fire and forget" annd synchronizat
 **Enterprise ready:**
 
 Relational Database (Postgres)
-    - Using as ACID compliant *"NoSQL"* (join-less) datastore and leveraging `jsonb`
-    - Powerful custom indexes for precisely what your service requires.
+
+- Using as ACID compliant *"NoSQL"* (join-less) datastore and leveraging `jsonb`
+- Powerful custom indexes for precisely what your service requires.
 
 REST API and Real-time Sockets
-    - TXQ exposes a simple, yet powerful API for storing, sending and streaming transactions to peers
-    - Server-Sent Events (SSE)
+- TXQ exposes a simple, yet powerful API for storing, sending and streaming transactions to peers
+- Server-Sent Events (SSE)
 
 Open Source and Schema
-    - MIT License
-    - Domain Driven Design Architecture (Use Cases)
-    - Simple and extendible open SQL database schema
+- MIT License
+- Domain Driven Design Architecture (Use Cases)
+- Simple and extendible open SQL database schema
+
 
 ## Why use TXQ?
 
-**tl;dr 1:** Sending transactions is now "fire and forget". The concurrent work queue handles retries and backoffs automatically to miners.
+>**tl;dr 1:** Sending transactions is now "fire and forget". The concurrent work queue handles retries and backoffs automatically to miners.
 
-**tl;dr 2:** TXQ gives Bitcoin developers complete control over their application transaction data, UTXOs.
+>**tl;dr 2:** TXQ gives Bitcoin developers complete control over their application transaction data, UTXOs.
 
 Up until now, Bitcoin SV "apps" relied on miners and blockchain cloudhosting services to get UTXO and transaction data. TXQ means app developers do not need to rely on 3rd parties for UTXO and transaction data &mdash; as long as all transactions of interest are saved to TXQ. That's it.
 
@@ -54,17 +58,17 @@ TXQ abstracts the transaction settlement process with miners so developers focus
 
 ## Features
 
-#### Single Source of Truth
+### Single Source of Truth
 
 Provide your application and services with a consistent picture of it's "Bitcoin State" without relying on 3rd parties for lookups and indexing.
 
-#### Merchant API Work Queue
+### Merchant API Work Queue
 
 Reliably broadcast transactions to a set of miners to get them reliably settled. Configuration options allow customizing the concurrency limit, exponential back off, and other behaviors.
 
 All Merchant API requests are logged to the database and also streamed in real-time to the SSE event interface.
 
-#### UTXO and Transaction Indexing
+### UTXO and Transaction Indexing
 
 TXQ automatically stores and indexes UTXOs and transactions without relying on miners and cloud providers.
 
@@ -88,6 +92,37 @@ Install global TypeScript and TypeScript Node
 
 ```
 npm install -g typescript ts-node
+```
+
+**Setup and Run**
+
+Copy `.env.example` to `.env` for productionn environment. See database instructions below.
+
+Install deps:
+
+```
+npm install
+```
+
+Developer testing:
+```
+npm run start-dev
+```
+
+Production build:
+
+```
+npm run build
+```
+
+Production run:
+```
+node ./dist/bootstrap/index.js
+```
+
+Testing:
+```
+jest
 ```
 
 ## Database
@@ -137,37 +172,6 @@ See `cfg/index.ts` for available options.
     //...
 ```
 
-## Clone this repository
-
-```
-npm install
-```
-
-## To Run the application in production mode
-
-Install with systemd.txq.service and build:
-
-```
-npm run build
-```
-
-```
-node ./dist/bootstrap/index.js
-```
-
-## To Run the application in development mode
-
-```
-npm run start-dev
-```
-
-## To Run the tests
-
-```
-yarn jest
-```
-
-
-## Resources
+## Additional Resources
 
 <a href='https://developers.matterpool.io'>MATTERPOOL DEVELOPER DOCUMENTATION</a>
