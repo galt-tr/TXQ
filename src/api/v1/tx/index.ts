@@ -12,8 +12,25 @@ import TransactionDataMissingError from '../../../services/error/TransactionData
 import GetTxsForSync from '../../../services/use_cases/tx/GetTxsForSync';
 import { sendResponseWrapper } from '../../../util/sendResponseWrapper';
 import { sendErrorWrapper } from '../../../util/sendErrorWrapper';
+import ResyncTx from '../../../services/use_cases/queue/ResyncTx';
 
 export default [
+
+  {
+    path: `${path}/tx/:txid/resync`,
+    method: 'post',
+    handler: [
+      async (Req: Request, res: Response, next: NextFunction) => {
+        try {
+          let resyncTx = Container.get(ResyncTx);
+          const data = await resyncTx.run({txid: Req.params.txid});
+          sendResponseWrapper(Req, res, 200, data.result);
+        } catch (error) {
+          next(error);
+        }
+      },
+    ],
+  },
   {
     path: `${path}/tx/:txid/sync`,
     method: 'post',
@@ -76,7 +93,7 @@ export default [
     ],
   },
   {
-    path: `${path}/tx/:txid/channel/:channel`,
+    path: `${path}/tx/:txid/topic/:channel`,
     method: 'get',
     handler: [
       async (Req: Request, res: Response, next: NextFunction) => {
@@ -95,7 +112,7 @@ export default [
     ],
   },
   {
-    path: `${path}/tx/:txid/channel`,
+    path: `${path}/tx/:txid/topic`,
     method: 'get',
     handler: [
       async (Req: Request, res: Response, next: NextFunction) => {
@@ -134,5 +151,6 @@ export default [
         }
       },
     ],
-  }
+  },
+
 ];

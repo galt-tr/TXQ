@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { Container } from 'typedi';
 import { path } from './../index';
-import GetTxsDlq from '../../../services/use_cases/tx/GetTxsDlq';
 import GetQueueStats from '../../../services/use_cases/queue/GetQueueStats';
-import ResyncTx from '../../../services/use_cases/queue/ResyncTx';
 import { sendResponseWrapper } from '../../../util/sendResponseWrapper';
+import GetTxsDlq from '../../../services/use_cases/tx/GetTxsDlq';
 
 export default [
   {
@@ -52,19 +51,4 @@ export default [
       },
     ],
   },
-  {
-    path: `${path}/queue/:txid/resync`,
-    method: 'post',
-    handler: [
-      async (Req: Request, res: Response, next: NextFunction) => {
-        try {
-          let resyncTx = Container.get(ResyncTx);
-          const data = await resyncTx.run({txid: Req.params.txid});
-          sendResponseWrapper(Req, res, 200, data.result);
-        } catch (error) {
-          next(error);
-        }
-      },
-    ],
-  }
 ];

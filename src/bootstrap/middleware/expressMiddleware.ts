@@ -7,7 +7,13 @@ import { HandleLogger } from './logger';
 import * as pretty from 'express-prettify';
 const handleCors = (router: Router) => router.use(cors());
 
+function defaultContentTypeMiddleware (req, res, next) {
+  req.headers['content-type'] = req.headers['content-type'] || 'application/json';
+  next();
+}
+
 const handleBodyRequestParsing = (router: Router) => {
+  router.use(defaultContentTypeMiddleware);
   router.use(parser.urlencoded({ extended: true }));
   router.use(parser.json({limit: '50mb'}));
   router.use(pretty({ query: 'pretty' }));

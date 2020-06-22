@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { Container } from 'typedi';
-import GetTxsByChannel from '../../../services/use_cases/tx/GetTxsByChannel';
 import { path } from './../index';
-import ResourceNotFoundError from '../../../services/error/ResourceNotFoundError';
 import { sendResponseWrapper } from '../../../util/sendResponseWrapper';
+import GetTxsByChannel from '../../../services/use_cases/tx/GetTxsByChannel';
+import ResourceNotFoundError from '../../../services/error/ResourceNotFoundError';
 import { sendErrorWrapper } from '../../../util/sendErrorWrapper';
 
 export default [
   {
-    path: `${path}/posts`,
+    path: `${path}/topic`,
     method: 'get',
     handler: [
       async (Req: Request, res: Response, next: NextFunction) => {
@@ -31,7 +31,7 @@ export default [
     ],
   },
   {
-    path: `${path}/posts/:channel`,
+    path: `${path}/topic/:channel`,
     method: 'get',
     handler: [
       async (Req: Request, res: Response, next: NextFunction) => {

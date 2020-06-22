@@ -12,7 +12,7 @@ import { sendErrorWrapper } from '../../../util/sendErrorWrapper';
 
 export default [
   {
-    path: `${path}/output/tx/:txid/:index`,
+    path: `${path}/txout/txid/:txid/:index`,
     method: 'get',
     handler: [
       async (Req: Request, res: Response, next: NextFunction) => {
@@ -37,7 +37,7 @@ export default [
     ],
   },
   {
-    path: `${path}/output/scripthash/:scripthash`,
+    path: `${path}/txout/scripthash/:scripthash`,
     method: 'get',
     handler: [
       async (Req: Request, res: Response, next: NextFunction) => {
@@ -57,7 +57,7 @@ export default [
     ],
   },
   {
-    path: `${path}/output/scripthash/:scripthash/utxo`,
+    path: `${path}/txout/scripthash/:scripthash/utxo`,
     method: 'get',
     handler: [
       async (Req: Request, res: Response, next: NextFunction) => {
@@ -77,7 +77,7 @@ export default [
     ],
   },
   {
-    path: `${path}/output/address/:address`,
+    path: `${path}/txout/address/:address`,
     method: 'get',
     handler: [
       async (Req: Request, res: Response, next: NextFunction) => {
@@ -99,7 +99,7 @@ export default [
     ],
   },
   {
-    path: `${path}/output/address/:address/utxo`,
+    path: `${path}/txout/address/:address/utxo`,
     method: 'get',
     handler: [
       async (Req: Request, res: Response, next: NextFunction) => {
