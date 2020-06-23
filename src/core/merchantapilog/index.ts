@@ -5,14 +5,15 @@ import { sql, DatabaseConnectionType } from 'slonik';
 class MerchantapilogModel {
   constructor(@Inject('db') private db: DatabaseConnectionType) {}
 
-  public async save(response: any, txid?: string): Promise<string> {
+  public async save(eventType: string, response: any, txid?: string): Promise<string> {
     const restext = JSON.stringify(response);
+    let requestTypeStr = eventType ? eventType : '';
     if (txid) {
-      let result: any = await this.db.query(sql`INSERT INTO merchantapilog(txid, response) VALUES (${txid}, ${restext})`);
-      return result;
+      let result: any = await this.db.query(sql`INSERT INTO merchantapilog(txid, event_type, response) VALUES (${txid}, ${requestTypeStr}, ${restext}) RETURNING id`);
+      return result.rows[0].id
     } else {
-      let result: any = await this.db.query(sql`INSERT INTO merchantapilog(response) VALUES (${restext})`);
-      return result;
+      let result: any = await this.db.query(sql`INSERT INTO merchantapilog(response, event_type) VALUES (${restext}, ${requestTypeStr}) RETURNING id`);
+      return result.rows[0].id
     }
   }
 }

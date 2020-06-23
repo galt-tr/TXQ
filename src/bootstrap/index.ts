@@ -19,6 +19,7 @@ import "../services/queue/index";
 import "../services/merchantapilog/index";
 import "../services/spend/index";
 import "../services/event/index";
+import "../services/updatelog/index";
 
 import "../services/use_cases/tx/GetTx";
 import "../services/use_cases/tx/SaveTxs";
@@ -36,6 +37,7 @@ import "../services/use_cases/spends/GetTxoutsByAddress";
 import "../services/use_cases/spends/GetTxoutsByScriptHash";
 import "../services/use_cases/spends/GetUtxosByAddress";
 import "../services/use_cases/spends/GetUtxosByScriptHash";
+import "../services/use_cases/events/ConnectChannelClientSSE";
 
 import EnqInitialTxsForSync from '../services/use_cases/tx/EnqInitialTxsForSync';
 
@@ -69,7 +71,7 @@ async function startPendingTaskPoller() {
 
 setInterval(() => {
   startPendingTaskPoller();
-}, Config.queue.checkPendingTimeSec * 1000);
+}, Config.queue.abandonedSyncTaskRescanSeconds * 1000);
 
 startPendingTaskPoller();
 

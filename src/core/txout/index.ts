@@ -5,38 +5,38 @@ import { sql, DatabaseConnectionType } from 'slonik';
 class TxoutModel {
   constructor(@Inject('db') private db: DatabaseConnectionType) {}
 
-  public async getTxoutByScriptHash(scripthash: string, offset: number, script?: boolean, unspent?: boolean): Promise<string> {
+  public async getTxoutByScriptHash(scripthash: string, offset: number, limit: number, script?: boolean, unspent?: boolean): Promise<string> {
     let result: any;
     if (script) {
       if (unspent) {
-        result = await this.db.query(sql`SELECT * FROM txout WHERE scripthash = ${scripthash} AND spend_txid IS NULL OFFSET ${offset} LIMIT 1000`);
+        result = await this.db.query(sql`SELECT * FROM txout WHERE scripthash = ${scripthash} AND spend_txid IS NULL OFFSET ${offset} LIMIT ${limit}`);
       } else {
-        result = await this.db.query(sql`SELECT * FROM txout WHERE scripthash = ${scripthash} OFFSET ${offset} LIMIT 1000`);
+        result = await this.db.query(sql`SELECT * FROM txout WHERE scripthash = ${scripthash} OFFSET ${offset} LIMIT ${limit}`);
       }
     } else {
       if (unspent) {
-        result = await this.db.query(sql`SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout WHERE scripthash = ${scripthash} AND spend_txid IS NULL OFFSET ${offset} LIMIT 1000`);
+        result = await this.db.query(sql`SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout WHERE scripthash = ${scripthash} AND spend_txid IS NULL OFFSET ${offset} LIMIT ${limit}`);
       } else {
-        result = await this.db.query(sql`SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout WHERE scripthash = ${scripthash} OFFSET ${offset} LIMIT 1000`);
+        result = await this.db.query(sql`SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout WHERE scripthash = ${scripthash} OFFSET ${offset} LIMIT ${limit}`);
       }
     }
     return result.rows
   }
 
-  public async getTxoutByAddress(address: string, offset: number, script?: boolean, unspent?: boolean): Promise<string> {
+  public async getTxoutByAddress(address: string, offset: number, limit: number, script?: boolean, unspent?: boolean): Promise<string> {
     let result: any;
     if (script) {
       if (unspent) {
-        result = await this.db.query(sql`SELECT * FROM txout WHERE address = ${address} AND spend_txid IS NULL OFFSET ${offset} LIMIT 1000`);
+        result = await this.db.query(sql`SELECT * FROM txout WHERE address = ${address} AND spend_txid IS NULL OFFSET ${offset} LIMIT ${limit}`);
       } else {
-        result = await this.db.query(sql`SELECT * FROM txout WHERE address = ${address} OFFSET ${offset} LIMIT 1000`);
+        result = await this.db.query(sql`SELECT * FROM txout WHERE address = ${address} OFFSET ${offset} LIMIT ${limit}`);
 
       }
     } else {
       if (unspent) {
-        result = await this.db.query(sql`SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout WHERE address = ${address} AND spend_txid IS NULL OFFSET ${offset} LIMIT 1000`);
+        result = await this.db.query(sql`SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout WHERE address = ${address} AND spend_txid IS NULL OFFSET ${offset} LIMIT ${limit}`);
       } else {
-        result = await this.db.query(sql`SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout WHERE address = ${address} OFFSET ${offset} LIMIT 1000`);
+        result = await this.db.query(sql`SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout WHERE address = ${address} OFFSET ${offset} LIMIT ${limit}`);
       }
     }
     return result.rows;

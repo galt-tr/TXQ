@@ -32,7 +32,7 @@ export default class SyncTxStatus extends UseCase {
   }
 
   /**
-   * Save the latest tx status and updatet blockhash if needed
+   * Save the latest tx status and update blockhash if needed
    *
    * @param txid txid to save status
    * @param status Merchant api status returned
@@ -93,8 +93,8 @@ export default class SyncTxStatus extends UseCase {
     let status = await miner.tx.status(params.txid, { verbose: true });
 
     await this.saveTxStatus(params.txid, status);
-    if (Config.merchantapi.response_logging) {
-      await this.merchantapilogService.save(status, params.txid);
+    if (Config.merchantapi.enableResponseLogging) {
+      await this.merchantapilogService.save('statustx', status, params.txid);
     }
 
     if (this.isStatusSuccess(status)) {
@@ -124,8 +124,8 @@ export default class SyncTxStatus extends UseCase {
         });
         await this.txService.saveTxSend(params.txid, response);
 
-        if (Config.merchantapi.response_logging) {
-          await this.merchantapilogService.save(response, params.txid);
+        if (Config.merchantapi.enableResponseLogging) {
+          await this.merchantapilogService.save('pushtx', response, params.txid);
         }
 
         if (response.payload.returnResult === 'failure') {
@@ -145,10 +145,10 @@ export default class SyncTxStatus extends UseCase {
         setTimeout(async () => {
           status = await miner.tx.status(params.txid, { verbose: true });
           await this.saveTxStatus(params.txid, status);
-          if (Config.merchantapi.response_logging) {
-            await this.merchantapilogService.save(status, params.txid);
+          if (Config.merchantapi.enableResponseLogging) {
+            await this.merchantapilogService.save('statustx', status, params.txid);
           }
-        }, 1000);
+        }, 2000);
       } else {
         // Note: Let this error out
         // We might want to throw an exception so we can allow user to keep retrying tx's

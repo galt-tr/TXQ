@@ -27,23 +27,27 @@ export interface Idb {
 }
 
 export interface IMerchantConfig {
-  response_logging: boolean,
+  enableResponseLogging: boolean,
   endpoints: Array<{name: string, url: string}>;
 }
 
 export interface ISyncQueue {
-  concurrency: number;
-  startingDelay: number;
-  maxDelay: number;
-  jitter: string;
-  timeMultiple: number;
-  numOfAttempts: number;
-  checkPendingTimeSec: number;
+  merchantapiRequestConcurrency: number;
+  abandonedSyncTaskRescanSeconds: number;
+  syncBackoff: {
+    startingDelay: number;
+    maxDelay: number;
+    jitter: string;
+    timeMultiple: number;
+    numOfAttempts: number;
+  }
 }
+
 export interface IConfig {
   appname?: string;
   baseurl?: string;
   env?: string;
+  enableUpdateLogging?: boolean;
   merchantapi?: IMerchantConfig;
   queue?: ISyncQueue,
   api?: IApi;

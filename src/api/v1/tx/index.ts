@@ -80,7 +80,7 @@ export default [
       async (Req: Request, res: Response, next: NextFunction) => {
         try {
           let getTx = Container.get(GetTx);
-          let data = await getTx.run({ txid: Req.params.txid, rawtx: Req.query.rawtx === '0' ? false : true });
+          let data = await getTx.run({ txid: Req.params.txid, channel: null, rawtx: Req.query.rawtx === '0' ? false : true });
           sendResponseWrapper(Req, res, 200, data.result);
         } catch (error) {
           if (error instanceof ResourceNotFoundError) {
@@ -93,7 +93,7 @@ export default [
     ],
   },
   {
-    path: `${path}/tx/:txid/topic/:channel`,
+    path: `${path}/tx/:txid/channel/:channel`,
     method: 'get',
     handler: [
       async (Req: Request, res: Response, next: NextFunction) => {
@@ -112,7 +112,7 @@ export default [
     ],
   },
   {
-    path: `${path}/tx/:txid/topic`,
+    path: `${path}/tx/:txid/channel`,
     method: 'get',
     handler: [
       async (Req: Request, res: Response, next: NextFunction) => {
@@ -151,6 +151,5 @@ export default [
         }
       },
     ],
-  },
-
+  }
 ];

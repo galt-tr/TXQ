@@ -59,11 +59,13 @@ CREATE TABLE txout (
     spend_index integer NULL
 );
 
+-- Do not need index on `txid` because we always query with (txid, channel)
 CREATE UNIQUE INDEX idx_uk_txout_txid_index ON txout USING btree (txid, index);
 CREATE INDEX idx_txout_address_index ON txout USING btree (address);
 CREATE INDEX idx_txout_scripthash_index ON txout USING btree (scripthash);
 
 CREATE TABLE txmeta (
+    id SERIAL PRIMARY KEY,
     txid varchar NOT NULL,
     channel varchar NOT NULL,
     metadata jsonb NULL,
@@ -75,12 +77,22 @@ CREATE TABLE txmeta (
 
 CREATE UNIQUE INDEX idx_uk_txmeta_txid_channel ON txmeta USING btree (txid, channel);
 
--- No other indexes for now
 CREATE TABLE merchantapilog (
     id SERIAL PRIMARY KEY,
+    event_type varchar NULL,
     txid varchar NULL,
-    response TEXT NULL
+    response jsonb NULL
 );
+
+CREATE TABLE updatelog (
+    id SERIAL PRIMARY KEY,
+    channel varchar NOT NULL,
+    event_type varchar NULL,
+    txid varchar NULL,
+    response jsonb NULL
+);
+
+CREATE INDEX idx_updatelog_channel ON updatelog USING btree (channel);
 
 CREATE TABLE versions (
     version_id SERIAL PRIMARY KEY,
@@ -90,6 +102,6 @@ CREATE TABLE versions (
 CREATE UNIQUE INDEX idx_uk_versions_version ON versions USING btree (version);
 
 -- Insert versions bootstrap
-INSERT INTO versions(version) VALUES ('202006130000');
+INSERT INTO versions(version) VALUES ('202006210000');
 
 

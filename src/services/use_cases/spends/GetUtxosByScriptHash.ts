@@ -10,8 +10,8 @@ export default class GetUtxosByScriptHash extends UseCase {
     super();
   }
 
-  public async run(params: { scripthash: string, offset: any }): Promise<UseCaseOutcome> {
-    let entities = await this.txoutService.getTxoutByScriptHash(params.scripthash, params.offset, false, true);
+  public async run(params: { scripthash: string, limit: any, offset: any }): Promise<UseCaseOutcome> {
+    let entities = await this.txoutService.getTxoutByScriptHash(params.scripthash, params.offset, params.limit, false, true);
     let utxoFormatted = [];
     utxoFormatted = entities.map((e) => {
       return {

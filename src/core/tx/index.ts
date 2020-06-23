@@ -8,6 +8,11 @@ class TxModel {
 
   constructor(@Inject('db') private db: DatabaseConnectionType) {}
 
+  public async isTxExist(txid: string): Promise<boolean> {
+    let result: any = await this.db.query(sql`SELECT txid FROM tx WHERE txid = ${txid}`);
+    return !!result.rows[0];
+  }
+
   public async getTx(txid: string, rawtx?: boolean): Promise<string> {
     if (rawtx) {
       let result: any = await this.db.query(sql`SELECT * FROM tx WHERE txid = ${txid}`);
@@ -20,13 +25,13 @@ class TxModel {
 
   public async saveTxid(txid: string): Promise<string> {
     const now = DateUtil.now();
-    let result: any = await this.db.query(sql`INSERT INTO tx(txid, updated_at, created_at, completed) VALUES (${txid}, ${now}, ${now}, false) ON CONFLICT DO NOTHING`);
+    let result: any = await this.db.query(sql`INSERT INTO tx(txid, updated_at, created_at, completed) VALUES (${txid}, ${now}, ${now}, false) ON CONFLICT DO NOTHING RETURNING txid`);
     return result;
   }
 
   public async saveTx(txid: string, rawtx?: string): Promise<string> {
     const now = DateUtil.now();
-    let result: any = await this.db.query(sql`INSERT INTO tx(txid, rawtx, updated_at, created_at, completed) VALUES (${txid}, ${rawtx}, ${now}, ${now}, false) ON CONFLICT(txid) DO UPDATE SET rawtx = EXCLUDED.rawtx, updated_at=${now}`);
+    let result: any = await this.db.query(sql`INSERT INTO tx(txid, rawtx, updated_at, created_at, completed) VALUES (${txid}, ${rawtx}, ${now}, ${now}, false) ON CONFLICT(txid) DO UPDATE SET rawtx = EXCLUDED.rawtx, updated_at=EXCLUDED.updated_at RETURNING txid`);
     return result;
   }
 

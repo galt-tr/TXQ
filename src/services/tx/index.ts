@@ -9,6 +9,10 @@ import { sync_state } from '../../core/txsync';
 export default class TxService {
   constructor(@Inject('txModel') private txModel, @Inject('txsyncModel') private txsyncModel, @Inject('logger') private logger) {}
 
+  public async isTxExist(txid: string): Promise<boolean> {
+    return this.txModel.isTxExist(txid);
+  }
+
   public async getTx(txid: string, rawtx?: boolean) {
     let tx = await this.txModel.getTx(txid, rawtx);
 
@@ -22,7 +26,7 @@ export default class TxService {
     if (!txid) {
       throw new InvalidParamError();
     }
-    await this.txModel.saveTxid(
+    return await this.txModel.saveTxid(
       txid
     );
   }
@@ -32,7 +36,7 @@ export default class TxService {
       throw new InvalidParamError();
     }
     const parsedTx = new bsv.Transaction(rawtx)
-    await this.txModel.saveTx(
+    return await this.txModel.saveTx(
       parsedTx.hash,
       rawtx
     );
@@ -59,16 +63,13 @@ export default class TxService {
       txid: txid
     });
 
-    console.log('set complete 1');
     await this.txModel.updateCompleted(
       txid,
       true
     );
-    console.log('set complete 2');
     await this.txsyncModel.updateTxsync(
       txid,
       sync_state.sync_success
     );
-    console.log('set complete 3');
   }
 }
