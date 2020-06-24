@@ -10,6 +10,7 @@
 
 
 ![TXQ](https://github.com/MatterPool/TXQ/blob/master/preview.png "Bitcoin Transaction Storage Queue Service")
+
 - [TXQ: Bitcoin Transaction Storage Queue Service](#txq--bitcoin-transaction-storage-queue-service)
       - [LIVE OPEN PUBLIC SERVER: <a target="_blank" href='https://txq.matterpool.io/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1'>TXQ.MATTERPOOL.IO](#live-open-public-server---a-target---blank--href--https---txqmatterpoolio-api-v1-tx-dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293-pretty-1--txqmatterpoolio)
   * [Motivation](#motivation)
@@ -39,11 +40,14 @@
     + [Force Resync of Transaction](#force-resync-of-transaction)
   * [Server Sent Events (SSE)](#server-sent-events--sse-)
     + [New Transactions Stream (Default channel)](#new-transactions-stream--default-channel-)
-    + [New Transactions Stream (custom channel)](#new-transactions-stream--custom-channel-)
+    + [New Transactions Stream (Custom Channel)](#new-transactions-stream--custom-channel-)
     + [New and Updated Transactions Stream (Default channel)](#new-and-updated-transactions-stream--default-channel-)
-    + [New and Updated Transactions Stream (custom channel)](#new-and-updated-transactions-stream--custom-channel-)
+    + [New and Updated Transactions Stream (Custom Channel)](#new-and-updated-transactions-stream--custom-channel-)
     + [Merchant API Log Stream](#merchant-api-log-stream)
+    + [Address Updates Stream](#address-updates-stream)
+    + [Scripthash Updates Stream](#scripthash-updates-stream)
   * [Additional Resources](#additional-resources)
+
 
 ## Motivation
 
