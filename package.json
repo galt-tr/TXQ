@@ -1,9 +1,9 @@
 {
   "name": "txq",
-  "version": "1.2.3",
+  "version": "1.2.5",
   "description": "TXQ: Bitcoin Transaction Storage Queue Service",
   "main": "src/bootstrap/index",
-  "license": "ISC",
+  "license": "MIT",
   "scripts": {
     "start": "node ./dist/bootstrap/index.js",
     "build": "tsc -p tsconfig.json",
@@ -83,5 +83,24 @@
   "_moduleAliases": {
     "@interfaces/*": "./src/interfaces/*",
     "cfg/*": "./src/cfg/*"
-  }
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MatterPool/TXQ.git"
+  },
+  "keywords": [
+    "bitcoin",
+    "bsv",
+    "satoshi-vision",
+    "queue",
+    "transaction"
+  ],
+  "author": "MatterPool Inc.",
+  "bugs": {
+    "url": "https://github.com/MatterPool/TXQ/issues"
+  },
+  "homepage": "https://github.com/MatterPool/TXQ#readme"
 }

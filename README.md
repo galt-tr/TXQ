@@ -1180,6 +1180,19 @@ data: {
 ```
 
 
+## Database Schema and Design
+
+The database chosen is postgres because it provides important features for developers and enterprises:
+
+- High performance relational database
+- Excellent `jsonb` storage and custom indexes
+    - Operating as high performance "NoSQL"
+- Known scaling properties
+    - TimescaleDB provides a chronological partitioning
+    - Master-Slave replication
+- ACID Compliant
+
+Future work:  Abstract away storage and allow developer to choose storage engine.
 
 ## Additional Resources
 
