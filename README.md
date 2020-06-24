@@ -109,7 +109,7 @@ jest
 
 Initial Schema:
 
-`src/database/202006130000-init-schema.sql`
+`src/database/202006210000-init-schema.sql`
 
 Migrations:
 
@@ -810,7 +810,7 @@ data: {
 
 ```
 
-### New Transactions Stream (custom channel)
+### New Transactions Stream (Custom Channel)
 
 Stream all newly created inserts for the provided custom queue channel
 
@@ -969,7 +969,7 @@ data: {
 
 ```
 
-### New and Updated Transactions Stream (custom channel)
+### New and Updated Transactions Stream (Custom Channel)
 
 Stream all newly created inserts and updated transactions for the provided custom queue channel
 
