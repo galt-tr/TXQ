@@ -1,7 +1,5 @@
 import cfg from './../../../cfg';
-import { createPool, SlonikError, sql } from 'slonik';
-import { Logger } from 'winston';
-import Container from 'typedi';
+import { createPool, sql } from 'slonik';
 
 const config = {
   host: cfg.db.host,
@@ -41,40 +39,7 @@ try {
       // }
     });
   });
-
-  /*console.log('pool-------------', url, pool);
-
-  pool.stream((s) => {
-    s.on('connect', () => {
-      console.log('errr');
-    });
-    s.on('data', () => {
-      console.log('data');
-    });
-  });
-  console.log('poool', pool);*/
 } catch (error) {
   console.log('slonik', error);
 }
-
-/*
-pool.stream.on('connect', () => {
-  console.log('connected to the Database');
-});
-
-pool.stream.on('error', function(err, client) {
-  console.error('idle client error', err.message, err.stack);
-  if (err) {
-    const logger: Logger = Container.get('logger');
-    logger.error('500', {
-      method: '',
-      url: '',
-      query: '',
-      ip: '',
-      error: err.message,
-      stack: err.stack,
-    });
-  }
-});
-*/
 export default pool;

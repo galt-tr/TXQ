@@ -46,6 +46,7 @@ export default [
           let data = await getTxoutsByScriptHash.run({
             scripthash: Req.params.scripthash,
             script: Req.query.script === '0' ? false : true,
+            limit: Req.query.limit ? Req.query.limit : 1000,
             offset: Req.query.offset ? Req.query.offset : 0,
             unspent: Req.query.unspent === '1' ? true : true
           });
@@ -65,6 +66,7 @@ export default [
           let getUtxosByScriptHash = Container.get(GetUtxosByScriptHash);
           let data = await getUtxosByScriptHash.run({
             scripthash: Req.params.scripthash,
+            limit: Req.query.limit ? Req.query.limit : 1000,
             offset: Req.query.offset ? Req.query.offset : 0,
           });
 
@@ -86,6 +88,7 @@ export default [
           let data = await getTxoutsByAddress.run({
             address: Req.params.address,
             script: Req.query.script === '0' ? false : true,
+            limit: Req.query.limit ? Req.query.limit : 1000,
             offset: Req.query.offset ? Req.query.offset : 0,
             unspent: Req.query.unspent === '1' ? true : false
           });
@@ -107,6 +110,7 @@ export default [
           let getUtxosByAddress = Container.get(GetUtxosByAddress);
           let data = await getUtxosByAddress.run({
             address: Req.params.address,
+            limit: Req.query.limit ? Req.query.limit : 1000,
             offset: Req.query.offset ? Req.query.offset : 0
           });
 

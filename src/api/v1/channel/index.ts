@@ -8,7 +8,7 @@ import { sendErrorWrapper } from '../../../util/sendErrorWrapper';
 
 export default [
   {
-    path: `${path}/topic`,
+    path: `${path}/channel`,
     method: 'get',
     handler: [
       async (Req: Request, res: Response, next: NextFunction) => {
@@ -16,11 +16,13 @@ export default [
           let getTxsByChannel = Container.get(GetTxsByChannel);
           let data = await getTxsByChannel.run({
             channel: '',
-            offset: Req.query.offset ? Req.query.offset : 0,
+            id: Req.query.id ? Req.query.id : 0,
+            limit: Req.query.limit ? Req.query.limit : 1000,
             rawtx: Req.query.rawtx === '1' ? true : false
           });
           sendResponseWrapper(Req, res, 200, data.result);
         } catch (error) {
+          console.log(error);
           if (error instanceof ResourceNotFoundError) {
             sendErrorWrapper(res, 404, error.toString());
             return;
@@ -31,7 +33,7 @@ export default [
     ],
   },
   {
-    path: `${path}/topic/:channel`,
+    path: `${path}/channel/:channel`,
     method: 'get',
     handler: [
       async (Req: Request, res: Response, next: NextFunction) => {
@@ -39,7 +41,8 @@ export default [
           let getTxsByChannel = Container.get(GetTxsByChannel);
           let data = await getTxsByChannel.run({
             channel: Req.params.channel,
-            offset: Req.query.offset ? Req.query.offset : 0,
+            id: Req.query.id ? Req.query.id : 0,
+            limit: Req.query.limit ? Req.query.limit : 1000,
             rawtx: Req.query.rawtx === '1' ? true : false
           });
           sendResponseWrapper(Req, res, 200, data.result);

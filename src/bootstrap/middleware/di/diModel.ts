@@ -4,6 +4,7 @@ import TxsyncModel from './../../../core/txsync';
 import TxmetaModel from './../../../core/txmeta';
 import TxinModel from './../../../core/txin';
 import MerchantapilogModel from './../../../core/merchantapilog';
+import UpdatelogModel from './../../../core/updatelog';
 
 export const statusDI = {
   TxModel,
@@ -11,5 +12,6 @@ export const statusDI = {
   TxsyncModel,
   TxmetaModel,
   TxinModel,
-  MerchantapilogModel
+  MerchantapilogModel,
+  UpdatelogModel
 };

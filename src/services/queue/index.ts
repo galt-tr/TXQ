@@ -29,14 +29,16 @@ export default class QueueService {
 
   public stats() {
     return {
-      config: {
-        concurrency: Config.queue.concurrency,
-        maxDelay: Config.queue.maxDelay,
-        numOfAttempts: Config.queue.numOfAttempts,
-        startingDelay: Config.queue.startingDelay,
-        jitter: Config.queue.jitter,
-        timeMultiple: Config.queue.timeMultiple,
-        checkPendingTimeSec: Config.queue.checkPendingTimeSec
+      queue: {
+        merchantapiRequestConcurrency: Config.queue.merchantapiRequestConcurrency,
+        abandonedSyncTaskRescanSeconds: Config.queue.abandonedSyncTaskRescanSeconds,
+        syncBackoff: {
+          maxDelay: Config.queue.syncBackoff.maxDelay,
+          numOfAttempts: Config.queue.syncBackoff.numOfAttempts,
+          startingDelay: Config.queue.syncBackoff.startingDelay,
+          jitter: Config.queue.syncBackoff.jitter,
+          timeMultiple: Config.queue.syncBackoff.timeMultiple,
+        }
       },
       stats: {
         tasks_pending: this.tasks.size,
@@ -52,7 +54,7 @@ export default class QueueService {
     if (this.initialized) {
       return;
     }
-    this.concurrency = concurrency;
+    this.concurrency = Config.queue.merchantapiRequestConcurrency || 2;
     this.cqueue = cq().limit({ concurrency: concurrency }).process((task) => {
       return new Promise(async (resolve) => {
           try {
@@ -137,12 +139,12 @@ export default class QueueService {
       const backoffResponse = await backoff.backOff(
         async () => taskFuncWrapper(),
         {
-          maxDelay: Config.queue.maxDelay, // 1000 * 60 * 60 * 16, // 16 hour max
-          numOfAttempts: Config.queue.numOfAttempts,
+          maxDelay: Config.queue.syncBackoff.maxDelay, // 1000 * 60 * 60 * 16, // 16 hour max
+          numOfAttempts: Config.queue.syncBackoff.numOfAttempts,
           delayFirstAttempt: true,
-          startingDelay: Config.queue.startingDelay,
-          jitter: Config.queue.jitter,
-          timeMultiple: Config.queue.timeMultiple,
+          startingDelay: Config.queue.syncBackoff.startingDelay,
+          jitter: Config.queue.syncBackoff.jitter,
+          timeMultiple: Config.queue.syncBackoff.timeMultiple,
           retry: (lastError: any, attemptNumber: number) => {
             this.logger.info('sync_retry', {
               txid: task.id,
