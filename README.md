@@ -728,11 +728,14 @@ Use <a href='https://developer.mozilla.org/en-US/docs/Web/API/EventSource' targe
 The `EventSource` automatically handles sending `Last-EventId` as a header when the stream reconnects so you will always get any missed updates.
 
 Example streams:
-- <a href='https://txq.matterpool.io/sse/channel/inserts' target="_blank">Inserts</a>
-- <a href='https://txq.matterpool.io/sse/channel/inserts/channelNameHere' target="_blank">Inserts (with Channel</a>
-- <a href='https://txq.matterpool.io/sse/channel/updates' target="_blank">Updates</a>
-- <a href='https://txq.matterpool.io/sse/channel/updates/channelNameHere' target="_blank">Updates (with Channel)</a>
+- <a href='https://txq.matterpool.io/sse/channel/inserts' target="_blank">Tx Inserts</a>
+- <a href='https://txq.matterpool.io/sse/channel/inserts/channelNameHere' target="_blank">Tx Inserts (with Channel</a>
+- <a href='https://txq.matterpool.io/sse/channel/updates' target="_blank">Tx Updates</a>
+- <a href='https://txq.matterpool.io/sse/channel/updates/channelNameHere' target="_blank">Tx Updates (with Channel)</a>
 - <a href='https://txq.matterpool.io/sse/merchantapilogs' target="_blank">Merchant API Log</a>
+- <a href='https://txq.matterpool.io/sse/txout/address/131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW' target="_blank">Address Updates</a>
+- <a href='https://txq.matterpool.io/sse/txout/scripthash/ee7beac2fcc315b37f190530d743769f255b1d413edd6e51bbc003022753f909' target="_blank">Scripthash Updates</a>
+
 
 ### New Transactions Stream (Default channel)
 
@@ -1113,8 +1116,66 @@ data: {
    }
 }
 
+```
+
+### Address Updates Stream
+
+Stream all newly created outputs by address
+
+`GET /sse/txout/address/:address` (SSE)
+
+Example: <a href='https://txq.matterpool.io/sse/txout/address/131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW' target="_blank">Address Stream</a>
+
+```javascript
+
+id: -1
+data: ["connected"]
+
+id: 2
+data: {
+   "entity":{
+      "txid":"10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2",
+      "index":1,
+      "address":"131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW",
+      "scripthash":"525d063bd0c861fddc4d4881cb495038652bf432c9e2586cc37d49e98a3cc60e",
+      "script":"76a914161e9c31fbec37d9ecb297bf4b814c6e189dbe5288ac",
+      "satoshis":284442
+   },
+   "eventType":"txout"
+}
 
 ```
+
+### Scripthash Updates Stream
+
+Stream all newly created outputs by scripthash
+
+`GET /sse/txout/scripthash/:scripthash` (SSE)
+
+Example: <a href='https://txq.matterpool.io/sse/txout/scripthash/525d063bd0c861fddc4d4881cb495038652bf432c9e2586cc37d49e98a3cc60e' target="_blank">Scripthash stream</a>
+
+
+```javascript
+
+id: -1
+data: ["connected"]
+
+id: 2
+data: {
+   "entity":{
+      "txid":"10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2",
+      "index":1,
+      "address":"131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW",
+      "scripthash":"525d063bd0c861fddc4d4881cb495038652bf432c9e2586cc37d49e98a3cc60e",
+      "script":"76a914161e9c31fbec37d9ecb297bf4b814c6e189dbe5288ac",
+      "satoshis":284442
+   },
+   "eventType":"txout"
+}
+
+```
+
+
 
 ## Additional Resources
 

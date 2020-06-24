@@ -120,6 +120,18 @@ export default class SaveTxs extends UseCase {
               parsedTx.outputs[i].satoshis,
             );
 
+            const wrappedEntity = { entity: {
+              txid: expectedTxid,
+              index: i,
+              address,
+              scripthash,
+              script: parsedTx.outputs[i].script.toHex(),
+              satoshis: parsedTx.outputs[i].satoshis
+            }, eventType: 'txout'};
+
+            this.eventService.pushChannelEvent('address-' + address, wrappedEntity, -1);
+            this.eventService.pushChannelEvent('scripthash-' + scripthash, wrappedEntity, -1);
+
             await this.spendService.backfillSpendIndexIfNeeded(
               parsedTx.hash, i
             );
