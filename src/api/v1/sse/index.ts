@@ -73,5 +73,33 @@ export default [
         }
       },
     ],
+  },
+  {
+    path: `${ssePath}/txout/address/:address`,
+    method: 'get',
+    handler: [
+      async (Req: Request, res: Response, next: NextFunction) => {
+        try {
+          let connectChannelClientSSE = Container.get(ConnectChannelClientSSE);
+          connectChannelClientSSE.run({ channel: 'address-' + Req.params.address, req: Req, res: res});
+        } catch (error) {
+          next(error);
+        }
+      },
+    ],
+  },
+  {
+    path: `${ssePath}/txout/scripthash/:scripthash`,
+    method: 'get',
+    handler: [
+      async (Req: Request, res: Response, next: NextFunction) => {
+        try {
+          let connectChannelClientSSE = Container.get(ConnectChannelClientSSE);
+          connectChannelClientSSE.run({ channel: 'scripthash-' + Req.params.scripthash, req: Req, res: res});
+        } catch (error) {
+          next(error);
+        }
+      },
+    ],
   }
 ];

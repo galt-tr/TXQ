@@ -1,6 +1,7 @@
 import { Service, Inject } from 'typedi';
 import { Response, Request } from 'express';
 import { SSEHandler } from '../../services/helpers/SSEHandler';
+import * as bsv from 'bsv';
 
 export interface SessionSSEPayload {
   id: number,
@@ -117,31 +118,6 @@ export default class EventService {
     });
   }
 
-  /**
-   * Connect SSE socket to listen for merchantapilog events
-   */
-  public async handleSSEMerchantapilogEvents(req: Request, res: Response) {
-    const sseHandler = new SSEHandler(['connected'], {});
-    this.logger.info('handleSSEMerchantapilogEvents', {
-      message: 'new_sse_merchantapilog_session'
-    });
-    const pseudoChannel = 'merchantapilogs';
-    const largestId = this.getChannelEventLargestId(pseudoChannel);
-    await sseHandler.init(req, res, largestId, async (lastEventId: number, largestChannelEventId, cb?: Function) => {
-      this.logger.info('handleSSEMerchantapilogEvents', {
-        lastEventId: lastEventId,
-        largestChannelEventId: largestChannelEventId,
-      });
-      cb && cb(this.getChannelMissedMessages(pseudoChannel, lastEventId, largestChannelEventId));
-    });
-    // Use the pseud-channel `merchantapilogs`
-    this.getChannelData(pseudoChannel);
-    this.channelMapEvents.get(pseudoChannel).sseHandlers.push({
-      time: (new Date()).getTime(),
-      handler: sseHandler
-    });
-  }
-
   private initChannel(channel: string): string {
     let channelStr = channel;
     if (!channel) {
@@ -176,7 +152,7 @@ export default class EventService {
     }
     return channelData;
   }
- 
+
   /**
    * Clean up old sessions
    */
@@ -190,7 +166,7 @@ export default class EventService {
 			}
 		}, 1000 * GARBAGE_CYCLE_TIME_SECONDS)
   }
-  
+
   /**
    * Delete any old expired sessions and handlers
    */
