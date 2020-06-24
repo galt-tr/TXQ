@@ -31,12 +31,11 @@ class TxmetaModel {
   }
 
   public async saveTxmeta(txid: string, channel: string | undefined | null, txmeta: ITransactionMeta, tags: any, extracted: any): Promise<string> {
-    const txmetainsert = JSON.stringify(txmeta);
-    const tagsinsert = JSON.stringify(tags);
-    const datainsert = JSON.stringify(extracted);
+    const txmetainsert = JSON.stringify(txmeta || {});
+    const tagsinsert = JSON.stringify(tags || {});
+    const datainsert = JSON.stringify(extracted || {});
     const now = DateUtil.now();
     let channelStr = channel ? channel : '';
-
     let result: any = await this.db.query(sql`INSERT INTO txmeta(txid, channel, metadata, updated_at, created_at, tags, extracted) VALUES (${txid}, ${channelStr}, ${txmetainsert}, ${now}, ${now}, ${tagsinsert}, ${datainsert}) ON CONFLICT(txid, channel) DO UPDATE SET updated_at=EXCLUDED.updated_at, metadata=EXCLUDED.metadata, tags=EXCLUDED.tags, extracted=EXCLUDED.extracted`);
     return result;
   }
