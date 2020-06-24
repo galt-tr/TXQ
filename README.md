@@ -172,7 +172,7 @@ See `cfg/index.ts` for available options.
 
 **Easy to integrate API and Real-time Sockets**
 - TXQ exposes a simple, yet powerful API for storing, sending and streaming transactions to peers
-- Server-Sent Events (SSE) - Cominng soon!
+- Server-Sent Events (SSE)
 
 **Open Source and Schema**
 - MIT License
