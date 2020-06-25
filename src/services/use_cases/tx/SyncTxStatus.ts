@@ -88,7 +88,10 @@ export default class SyncTxStatus extends UseCase {
       };
     }
     const miner = new Minercraft({
-      url: Config.merchantapi.endpoints[0].url
+      url: Config.merchantapi.endpoints[0].url,
+      headers: Config.merchantapi.endpoints[0].headers,
+      maxContentLength: 52428890,
+      maxBodyLength: 52428890
     });
     let status = await miner.tx.status(params.txid, { verbose: true });
 
@@ -120,7 +123,13 @@ export default class SyncTxStatus extends UseCase {
           txid: tx.txid
         });
         let response = await miner.tx.push(tx.rawtx, {
-          verbose: true
+          verbose: true,
+          maxContentLength: 52428890,
+          maxBodyLength: 52428890
+
+        });
+        this.logger.info('send_result', {
+          response
         });
         await this.txService.saveTxSend(params.txid, response);
 
