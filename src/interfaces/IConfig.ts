@@ -28,7 +28,7 @@ export interface Idb {
 
 export interface IMerchantConfig {
   enableResponseLogging: boolean,
-  endpoints: Array<{name: string, url: string}>;
+  endpoints: Array<{name: string, url: string, headers?: any}>;
 }
 
 export interface ISyncQueue {

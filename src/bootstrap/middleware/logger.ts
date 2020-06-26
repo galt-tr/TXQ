@@ -41,7 +41,7 @@ export const HandleLogger = (router: Router) => {
       method: req.method,
       url: req.originalUrl,
       query: JSON.stringify(req.query),
-      body: req.body.size > 1000 ? 'suppressed_too_large' : req.body,
+      body: 'hidden',
       reqid: ++count,
       ip: req.ip,
     };
