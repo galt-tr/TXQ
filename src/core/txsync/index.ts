@@ -44,6 +44,16 @@ class TxsyncModel {
     return txids;
   }
 
+  public async getTxsPending(offset: number, limit = 10000): Promise<string[]> {
+    let result: any;
+    result = await this.db.query(sql`SELECT tx.txid FROM tx, txsync WHERE txsync.sync = 1 AND txsync.txid = tx.txid AND tx.completed = false OFFSET ${offset} LIMIT ${limit}`);
+    const txids = [];
+    for (const item of result.rows) {
+      txids.push(item['txid']);
+    }
+    return txids;
+  }
+
   public async incrementRetries(txid: string): Promise<string> {
     const now = DateUtil.now();
     let result: any = await this.db.query(sql`UPDATE txsync set status_retries = status_retries + 1, updated_at=${now} where txid = ${txid}`);

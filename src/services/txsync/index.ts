@@ -28,6 +28,10 @@ export default class TxsyncService {
     return await this.txsyncModel.getTxsDlq(dlq);
   }
 
+  public async getTxsPending(offset: number, limit: number) {
+    return await this.txsyncModel.getTxsPending(offset, limit);
+  }
+
   public async incrementRetries(txid: string) {
     if (!txid) {
       throw new InvalidParamError();

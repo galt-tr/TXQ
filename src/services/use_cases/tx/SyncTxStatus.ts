@@ -55,7 +55,7 @@ export default class SyncTxStatus extends UseCase {
     txid: string,
     forceRefresh?: boolean
   }): Promise<UseCaseOutcome> {
-    this.logger.info('sync', {
+    this.logger.debug('sync', {
       txid: params.txid,
       trace: 1
     });
@@ -63,6 +63,10 @@ export default class SyncTxStatus extends UseCase {
     let txsync = await this.txsyncService.getTxsync(params.txid);
     let tx = await this.txService.getTx(params.txid, false);
 
+    this.logger.debug('sync', {
+      txid: params.txid,
+      trace: 2
+    });
     if (!tx || !txsync) {
       this.logger.error('sync', {
         txid: params.txid,
@@ -113,21 +117,44 @@ export default class SyncTxStatus extends UseCase {
         result: status
       };
     }
+    this.logger.debug('sync', {
+      txid: params.txid,
+      trace: 3
+    });
     // Check various error conditions and check whether we need to resend or halt
     if (status && status.payload && status.payload.returnResult === 'failure' &&
       status.payload.resultDescription === 'ERROR: No such mempool or blockchain transaction. Use gettransaction for wallet transactions.') {
+        this.logger.info('sync', {
+          txid: params.txid,
+          trace: 4
+        });
       // Now load rawtx
       tx = await this.txService.getTx(params.txid, true);
       if (tx.rawtx) {
         this.logger.info('send', {
           txid: tx.txid
         });
-        let response = await miner.tx.push(tx.rawtx, {
-          verbose: true,
-          maxContentLength: 52428890,
-          maxBodyLength: 52428890
-
+        let response;
+        this.logger.info('sync', {
+          txid: params.txid,
+          trace: 5
         });
+        try {
+          response = await miner.tx.push(tx.rawtx, {
+            verbose: true,
+            maxContentLength: 52428890,
+            maxBodyLength: 52428890
+          });
+          this.logger.info('sync', {
+            txid: params.txid,
+            trace: 6
+          });
+        } catch (err) {
+          this.logger.error('send_error', {
+            err
+          });
+          throw err;
+        }
         this.logger.info('send_result', {
           response
         });
@@ -170,6 +197,7 @@ export default class SyncTxStatus extends UseCase {
     }
     this.logger.debug('sync', {
       txid: params.txid,
+      status: status,
       info: 'TransactionStillProcessingError',
     });
 

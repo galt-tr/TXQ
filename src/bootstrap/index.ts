@@ -21,6 +21,7 @@ import "../services/spend/index";
 import "../services/event/index";
 import "../services/updatelog/index";
 
+
 import "../services/use_cases/tx/GetTx";
 import "../services/use_cases/tx/SaveTxs";
 import "../services/use_cases/tx/SyncTxStatus";
@@ -29,9 +30,10 @@ import "../services/use_cases/tx/GetTxsByChannel";
 import "../services/use_cases/tx/EnqInitialTxsForSync";
 import "../services/use_cases/tx/IncrementTxRetries";
 import "../services/use_cases/tx/UpdateTxDlq";
-import "../services/use_cases/tx/GetTxsDlq";
+import "../services/use_cases/queue/GetTxsDlq";
 import "../services/use_cases/queue/ResyncTx";
 import "../services/use_cases/queue/GetQueueStats";
+import "../services/use_cases/queue/GetTxsPending";
 import "../services/use_cases/spends/GetTxout";
 import "../services/use_cases/spends/GetTxoutsByAddress";
 import "../services/use_cases/spends/GetTxoutsByScriptHash";

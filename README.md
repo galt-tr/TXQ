@@ -38,6 +38,7 @@
     + [Get Queue Stats](#get-queue-stats)
     + [Get Dead-Letter Transactions Queue](#get-dead-letter-transactions-queue)
     + [Force Resync of Transaction](#force-resync-of-transaction)
+    + [Get Pending Queue Tasks](#get-pending-queue-tasks)
   * [Server Sent Events (SSE)](#server-sent-events--sse-)
     + [New Transactions Stream (Default channel)](#new-transactions-stream--default-channel-)
     + [New Transactions Stream (Custom Channel)](#new-transactions-stream--custom-channel-)
@@ -46,8 +47,9 @@
     + [Merchant API Log Stream](#merchant-api-log-stream)
     + [Address Updates Stream](#address-updates-stream)
     + [Scripthash Updates Stream](#scripthash-updates-stream)
+  * [Database Schema and Design](#database-schema-and-design)
   * [Additional Resources](#additional-resources)
-
+ 
 
 ## Motivation
 
@@ -722,6 +724,35 @@ Sets `tx.completed = false` and resets `sync = 1` (pending) and kick starts the 
   "status": 200,
   "errors": [],
   "result": {} // Success is empty
+}
+```
+
+
+### Get Pending Queue Tasks
+
+`GET /api/v1/queue/pending?offset=0&limit=1000&prett`
+
+Params:
+- offset: Skip items
+- limit: Limit ites returned
+- pretty: whether to pretty print
+
+Retrieve pending txid's that are not expired, pending state. (ie: tx.completed == false)
+
+This is useful for seeing which transactions are still pending to be mined.
+
+```javascript
+{{
+   "status":200,
+   "errors":[
+
+   ],
+   "result":[
+      "663ee4c9a17070ee5e91eee7f863eaa92ad6ff3144aab94248d4e3ae7380244d",
+      "a59c5fc76654390239dcb573aee752ad6f2f40ea0e238eac95942ee87f2b9043",
+      "60fa2f8f144ca71e7f573681940f3fcb63125c4d52d12a647e04ff8b408a16ba",
+      "3af19895c4a40b8bb49c5623609099068777a2f4451d5a4186105e2fa2e4c27b"
+   ]
 }
 ```
 
