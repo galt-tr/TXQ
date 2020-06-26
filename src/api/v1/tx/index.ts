@@ -7,7 +7,7 @@ import { path } from './../index';
 import ResourceNotFoundError from '../../../services/error/ResourceNotFoundError';
 import TxhashMismatchError from '../../../services/error/TxhashMismatchError';
 import InvalidParamError from '../../../services/error/InvalidParamError';
-import TransactionStillProcessingError from '../../../services/error/TransactionStillProcessingError';
+import TransactionStillProcessingError from '../../../services/error/TransactionStillProcessing';
 import TransactionDataMissingError from '../../../services/error/TransactionDataMissingError';
 import GetTxsForSync from '../../../services/use_cases/tx/GetTxsForSync';
 import { sendResponseWrapper } from '../../../util/sendResponseWrapper';

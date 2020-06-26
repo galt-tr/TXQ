@@ -24,7 +24,7 @@ const config: IConfig = {
   },
   queue: {
     // Max number of concurrent requests to sync tx status from merchantapi
-    merchantapiRequestConcurrency: process.env.MERCHANT_API_CONCURRENCY ? parseInt(process.env.MERCHANT_API_CONCURRENCY) : 3,
+    taskRequestConcurrency: process.env.MERCHANT_API_CONCURRENCY ? parseInt(process.env.MERCHANT_API_CONCURRENCY) : 3,
     abandonedSyncTaskRescanSeconds: 60,       // How many seconds to rescan for missed tasks
     syncBackoff: {
       // 'full' or 'none'
@@ -41,24 +41,26 @@ const config: IConfig = {
   },
   enableUpdateLogging: true,                  // Whether to log every update entity to the database
   merchantapi: {
+    sendPolicy: 'ALL_FIRST_PRIORITY_SUCCESS', // 'SERIAL_BACKUP' | 'ALL_FIRST_PRIORITY_SUCCESS';
+    statusPolicy: 'SERIAL_BACKUP',            // 'SERIAL_BACKUP'
     enableResponseLogging: true,              // Whether to log every request and response from merchantapi's to the database
     endpoints: [
       {
-        name: 'matterpool.io',
-        url: 'https://merchantapi.matterpool.io',
+        name: 'taal.com',
+        url: 'https://merchantapi.taal.com',
         headers: {
         }
       },
       {
-        name: 'mempool.com',
+        name: 'mempool.io',
         url: 'https://www.ddpurse.com/openapi',
         headers: {
           token: "561b756d12572020ea9a104c3441b71790acbbce95a6ddbf7e0630971af9424b"
         }
       },
       {
-        name: 'taal.com',
-        url: 'https://merchantapi.taal.com',
+        name: 'matterpool.io',
+        url: 'https://merchantapi.matterpool.io',
         headers: {
         }
       },

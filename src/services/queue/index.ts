@@ -3,6 +3,7 @@ import { IRetryableTask } from '../../interfaces/IRetryableTask';
 import * as cq from 'concurrent-queue';
 import * as backoff from 'exponential-backoff';
 import Config from '../../cfg';
+import TransactionStillProcessing from '../../services/error/TransactionStillProcessing';
 
 @Service('queueService')
 export default class QueueService {
@@ -64,13 +65,24 @@ export default class QueueService {
               task: task,
             });
           } catch (err) {
+            if (err instanceof TransactionStillProcessing) {
+              // always resolve because we are done processing on cqueue successful
+              return resolve({
+                success: false,
+                task: task,
+              });
+            }
+
             this.logger.info('cqueue_task_error', {
-              err: err.toString()
+              err: err.toString(),
+              stack: err.stack,
             });
             // always resolve because we are done processing on cqueue successful
             return resolve({
               success: false,
               task: task,
+              err: err.stack,
+              stack: err.toString()
             });
           }
       });
@@ -160,7 +172,6 @@ export default class QueueService {
       this.logger.info('sync_complete', backoffResponse);
       this.tasks.delete(task.id);
     } catch (e) {
-      console.log('e', e);
       this.tasks_expired++;
       this.logger.error('sync_expired', {
         txid: task.id,

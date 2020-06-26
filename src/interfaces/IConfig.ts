@@ -26,13 +26,26 @@ export interface Idb {
   idleTimeoutMillis?: number | string;
 }
 
+
+/**
+ * Configure merchantapi miner endpoints
+ * Pass in any required headers if needed for auth
+ */
+export interface IMerchantApiEndpointConfig {
+  name: string,
+  url: string,
+  headers?: any
+}
+
 export interface IMerchantConfig {
+  sendPolicy: undefined | 'SERIAL_BACKUP' | 'ALL_FIRST_PRIORITY_SUCCESS';
+  statusPolicy: undefined | 'SERIAL_BACKUP';
   enableResponseLogging: boolean,
-  endpoints: Array<{name: string, url: string, headers?: any}>;
+  endpoints: Array<IMerchantApiEndpointConfig>;
 }
 
 export interface ISyncQueue {
-  merchantapiRequestConcurrency: number;
+  taskRequestConcurrency: number;
   abandonedSyncTaskRescanSeconds: number;
   syncBackoff: {
     startingDelay: number;

@@ -129,31 +129,46 @@ See `cfg/index.ts` for available options.
 {
     // ...
     queue: {
-      merchantapiRequestConcurrency: 3,         // Max number of concurrent requests to sync tx status from merchantapi
+      // Max number of concurrent requests to sync tx status from merchantapi
+      taskRequestConcurrency: process.env.MERCHANT_API_CONCURRENCY ? parseInt(process.env.MERCHANT_API_CONCURRENCY) : 3,
       abandonedSyncTaskRescanSeconds: 60,       // How many seconds to rescan for missed tasks
       syncBackoff: {
-        jitter: 'none',                         // 'full' or 'none'
-        timeMultiple: 2,                        // Exponential back off multiple
-        startingDelay: 1000 * 60,               // Initial start delay before first re-check
-        maxDelay: 1000 * 60 * 20,               // Max back off time. 20 Minutes is max
-        numOfAttempts: 20,                      // Max attempts before being put into 'dlq'
+        // 'full' or 'none'
+        jitter: process.env.SYNC_JITTER ? process.env.SYNC_JITTER : 'none',
+        // Exponential back off multiple
+        timeMultiple: process.env.SYNC_BACKOFF_MULTIPLE ? parseInt(process.env.SYNC_BACKOFF_MULTIPLE) : 2,
+        // Initial start delay before first re-check
+        startingDelay: process.env.SYNC_START_DELAY ? parseInt(process.env.SYNC_START_DELAY) : 1000 * 60,
+        // Max back off time. 20 Minutes is max
+        maxDelay: process.env.SYNC_MAX_DELAY ? parseInt(process.env.SYNC_MAX_DELAY) : 1000 * 60 * 20,
+        // Max attempts before being put into 'dlq'
+        numOfAttempts: process.env.SYNC_MAX_ATTEMPTS ? parseInt(process.env.SYNC_MAX_ATTEMPTS) : 20
       }
     },
     enableUpdateLogging: true,                  // Whether to log every update entity to the database
     merchantapi: {
+      sendPolicy: 'ALL_FIRST_PRIORITY_SUCCESS', // 'SERIAL_BACKUP' | 'ALL_FIRST_PRIORITY_SUCCESS';
+      statusPolicy: 'SERIAL_BACKUP',            // 'SERIAL_BACKUP'
       enableResponseLogging: true,              // Whether to log every request and response from merchantapi's to the database
       endpoints: [
         {
-          name: 'matterpool',
-          url: 'https://merchantapi.matterpool.io'
+          name: 'matterpool.io',
+          url: 'https://merchantapi.matterpool.io',
+          headers: {
+          }
         },
         {
-          name: 'mempool',
-          url: 'https://merchantapi.mempool.com'
+          name: 'taal.com',
+          url: 'https://merchantapi.taal.com',
+          headers: {
+          }
         },
         {
-          name: 'taal',
-          url: 'https://merchantapi.taal.com'
+          name: 'mempool.io',
+          url: 'https://www.ddpurse.com/openapi',
+          headers: {
+            token: "561b756d12572020ea9a104c3441b71790acbbce95a6ddbf7e0630971af9424b"
+          }
         },
       ]
     },
@@ -756,6 +771,36 @@ This is useful for seeing which transactions are still pending to be mined.
 }
 ```
 
+### Get Queue Tasks by Sync Status
+
+Retrieves the txids in the various sync states:
+`GET /api/v1/queue/sync/success?offset=0&limit=1000&pretty`
+`GET /api/v1/queue/sync/failure?offset=0&limit=1000&pretty`
+`GET /api/v1/queue/sync/none?offset=0&limit=1000&pretty`
+`GET /api/v1/queue/sync/pending?offset=0&limit=1000&pretty`
+
+Params:
+- offset: Skip items
+- limit: Limit ites returned
+- pretty: whether to pretty print
+
+Retrieve pending txid's that are either `success`, `failure`, `pending`, or `none`
+
+```javascript
+{{
+   "status":200,
+   "errors":[
+
+   ],
+   "result":[
+      "663ee4c9a17070ee5e91eee7f863eaa92ad6ff3144aab94248d4e3ae7380244d",
+      "a59c5fc76654390239dcb573aee752ad6f2f40ea0e238eac95942ee87f2b9043",
+      "60fa2f8f144ca71e7f573681940f3fcb63125c4d52d12a647e04ff8b408a16ba",
+      "3af19895c4a40b8bb49c5623609099068777a2f4451d5a4186105e2fa2e4c27b"
+   ]
+}
+```
+
 ## Server Sent Events (SSE)
 
 Use <a href='https://developer.mozilla.org/en-US/docs/Web/API/EventSource' target="_blank">EventSource</a> to reliably receive updates.
@@ -1106,8 +1151,9 @@ data: ["connected"]
 
 id: 171
 data: {
-   "eventType":"statustx",
-   "entity":{
+  "miner": "matterpool.io",
+  "eventType":"statustx",
+  "entity":{
       "txid":"1b7182a2d6ca5f0caa06ba2ac15ade4e5009e6b8d942ddc958d12b0087a37d34",
       "payload":{
          "apiVersion":"0.1.0",
@@ -1130,8 +1176,9 @@ data: {
 
 id: 174
 data: {
-   "eventType":"pushtx",
-   "entity":{
+  "miner": "matterpool.io",
+  "eventType":"pushtx",
+  "entity":{
       "txid":"a64c070d13d22e48f06c5edb692c0498f81d27d97fe6d0e092eebd1cd1063633",
       "payload":{
          "apiVersion":"0.1.0",

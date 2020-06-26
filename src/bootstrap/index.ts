@@ -34,6 +34,7 @@ import "../services/use_cases/queue/GetTxsDlq";
 import "../services/use_cases/queue/ResyncTx";
 import "../services/use_cases/queue/GetQueueStats";
 import "../services/use_cases/queue/GetTxsPending";
+import "../services/use_cases/queue/GetTxsBySyncState";
 import "../services/use_cases/spends/GetTxout";
 import "../services/use_cases/spends/GetTxoutsByAddress";
 import "../services/use_cases/spends/GetTxoutsByScriptHash";

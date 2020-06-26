@@ -22,7 +22,6 @@ export default [
           });
           sendResponseWrapper(Req, res, 200, data.result);
         } catch (error) {
-          console.log(error);
           if (error instanceof ResourceNotFoundError) {
             sendErrorWrapper(res, 404, error.toString());
             return;

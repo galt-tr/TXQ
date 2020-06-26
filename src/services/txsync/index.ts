@@ -32,6 +32,10 @@ export default class TxsyncService {
     return await this.txsyncModel.getTxsPending(offset, limit);
   }
 
+  public async getTxsBySyncState(offset: number, limit: number, syncState: sync_state) {
+    return await this.txsyncModel.getTxsBySyncState(offset, limit, syncState);
+  }
+
   public async incrementRetries(txid: string) {
     if (!txid) {
       throw new InvalidParamError();

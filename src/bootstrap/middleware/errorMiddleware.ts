@@ -27,8 +27,6 @@ const handleServerError = (router: Router) => {
       return next();
     }
     const logger: Logger = Container.get('logger');
-    console.log('errThrown', err);
-
     logger.error('500', {
       method: req.method,
       url: req.originalUrl,

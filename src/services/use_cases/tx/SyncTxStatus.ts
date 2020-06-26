@@ -3,13 +3,14 @@ import { UseCase } from '../UseCase';
 import { UseCaseOutcome } from '../UseCaseOutcome';
 import ResourceNotFoundError from '../../error/ResourceNotFoundError';
 import Config from './../../../cfg';
-import * as Minercraft from 'minercraft';
-import TransactionStillProcessingError from '../../error/TransactionStillProcessingError';
+import TransactionStillProcessing from '../../error/TransactionStillProcessing';
 import TransactionDataMissingError from '../../error/TransactionDataMissingError';
 import { sync_state } from '../../../core/txsync';
+import { MerchantRequestor } from '../../helpers/MerchantRequestor';
 
 @Service('syncTxStatus')
 export default class SyncTxStatus extends UseCase {
+  private merchantRequestor;
   constructor(
     @Inject('merchantapilogService') private merchantapilogService,
     @Inject('txService') private txService,
@@ -17,7 +18,21 @@ export default class SyncTxStatus extends UseCase {
     @Inject('logger') private logger
   ) {
     super();
+
+    const saveResponseTask = async (miner: string, eventType: string, response: any, txid: string) => {
+      if (Config.merchantapi.enableResponseLogging) {
+        await this.merchantapilogService.save(miner, eventType, response, txid);
+      }
+      return true;
+    };
+
+    this.merchantRequestor = new MerchantRequestor(
+      { ... Config.merchantapi },
+      this.logger,
+      saveResponseTask
+    )
   }
+
 
   /**
   * Whether this is a valid synced statuts
@@ -91,18 +106,9 @@ export default class SyncTxStatus extends UseCase {
         result: tx.status
       };
     }
-    const miner = new Minercraft({
-      url: Config.merchantapi.endpoints[0].url,
-      headers: Config.merchantapi.endpoints[0].headers,
-      maxContentLength: 52428890,
-      maxBodyLength: 52428890
-    });
-    let status = await miner.tx.status(params.txid, { verbose: true });
+    let status = await this.merchantRequestor.statusTx(params.txid);
 
     await this.saveTxStatus(params.txid, status);
-    if (Config.merchantapi.enableResponseLogging) {
-      await this.merchantapilogService.save('statustx', status, params.txid);
-    }
 
     if (this.isStatusSuccess(status)) {
       this.logger.debug('sync', {
@@ -140,11 +146,12 @@ export default class SyncTxStatus extends UseCase {
           trace: 5
         });
         try {
-          response = await miner.tx.push(tx.rawtx, {
+          response = await this.merchantRequestor.pushTx(tx.rawtx);
+          /*response = await miner.tx.push(tx.rawtx, {
             verbose: true,
             maxContentLength: 52428890,
             maxBodyLength: 52428890
-          });
+          });*/
           this.logger.info('sync', {
             txid: params.txid,
             trace: 6
@@ -160,10 +167,6 @@ export default class SyncTxStatus extends UseCase {
         });
         await this.txService.saveTxSend(params.txid, response);
 
-        if (Config.merchantapi.enableResponseLogging) {
-          await this.merchantapilogService.save('pushtx', response, params.txid);
-        }
-
         if (response.payload.returnResult === 'failure') {
           this.logger.error('send_error', {
             txid: tx.txid,
@@ -171,6 +174,9 @@ export default class SyncTxStatus extends UseCase {
           });
           // Something bad, cannot recover
           await this.txService.updateTxsync(params.txid, sync_state.sync_fail);
+
+          // Todo: Should this throw an error instead?
+          // Under what condition will statuts be 'failure'? Can it be retried by another merchantapi?
           return {
             success: true,
             result: status
@@ -179,12 +185,9 @@ export default class SyncTxStatus extends UseCase {
         // Try to update status again since we just broadcasted
         // Update in the background
         setTimeout(async () => {
-          status = await miner.tx.status(params.txid, { verbose: true });
-          await this.saveTxStatus(params.txid, status);
-          if (Config.merchantapi.enableResponseLogging) {
-            await this.merchantapilogService.save('statustx', status, params.txid);
-          }
-        }, 2000);
+          let retryStatus = await this.merchantRequestor.statusTx(params.txid);
+          await this.saveTxStatus(params.txid, retryStatus);
+        }, 1000);
       } else {
         // Note: Let this error out
         // We might want to throw an exception so we can allow user to keep retrying tx's
@@ -198,10 +201,10 @@ export default class SyncTxStatus extends UseCase {
     this.logger.debug('sync', {
       txid: params.txid,
       status: status,
-      info: 'TransactionStillProcessingError',
+      info: 'TransactionStillProcessing',
     });
 
     // Transaction has not setled
-    throw new TransactionStillProcessingError();
+    throw new TransactionStillProcessing();
   }
 }
