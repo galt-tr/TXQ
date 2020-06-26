@@ -150,8 +150,8 @@ export default class SyncTxStatus extends UseCase {
             trace: 6
           });
         } catch (err) {
-          this.logger.error('send_error', {
-            err
+          this.logger.error('push_error', {
+            err: err.toString()
           });
           throw err;
         }

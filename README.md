@@ -49,7 +49,7 @@
     + [Scripthash Updates Stream](#scripthash-updates-stream)
   * [Database Schema and Design](#database-schema-and-design)
   * [Additional Resources](#additional-resources)
- 
+
 
 ## Motivation
 
@@ -730,7 +730,7 @@ Sets `tx.completed = false` and resets `sync = 1` (pending) and kick starts the 
 
 ### Get Pending Queue Tasks
 
-`GET /api/v1/queue/pending?offset=0&limit=1000&prett`
+`GET /api/v1/queue/pending?offset=0&limit=1000&pretty`
 
 Params:
 - offset: Skip items
