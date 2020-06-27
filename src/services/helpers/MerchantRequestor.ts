@@ -253,7 +253,7 @@ export class MerchantRequestor {
    * @param config Config options
    */
   constructor(private config: IMerchantConfig, private logger: any, private responseSaver: Function) {
-    this.config.sendPolicy = this.config.sendPolicy || 'SERIAL_BACKUP';
+    this.config.sendPolicy = this.config.sendPolicy || 'ALL_FIRST_PRIORITY_SUCCESS';
     this.config.statusPolicy = this.config.statusPolicy || 'SERIAL_BACKUP';
     this.sendPolicy = this.sendPolicy || MerchantRequestorPolicyFactory.getSendPolicy(this.config, this.logger, this.responseSaver);
     this.statusPolicy = this.statusPolicy || MerchantRequestorPolicyFactory.getStatusPolicy(this.config, this.logger, this.responseSaver);

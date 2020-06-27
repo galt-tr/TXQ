@@ -44,6 +44,7 @@ const config: IConfig = {
     sendPolicy: 'ALL_FIRST_PRIORITY_SUCCESS', // 'SERIAL_BACKUP' | 'ALL_FIRST_PRIORITY_SUCCESS';
     statusPolicy: 'SERIAL_BACKUP',            // 'SERIAL_BACKUP'
     enableResponseLogging: true,              // Whether to log every request and response from merchantapi's to the database
+    enableProxy: true,                        // Exposes /merchantapi/<miner name>/mapi/tx endpoints...
     endpoints: [
       {
         name: 'taal.com',

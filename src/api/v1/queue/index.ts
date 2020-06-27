@@ -54,24 +54,6 @@ export default [
     ],
   },
   {
-    path: `${path}/queue/pending`,
-    method: 'get',
-    handler: [
-      async (Req: Request, res: Response, next: NextFunction) => {
-        try {
-          let getTxsPending = Container.get(GetTxsPending);
-          const data = await getTxsPending.run({
-            limit: Req.query.limit ? Req.query.limit : 10000,
-            offset: Req.query.offset ? Req.query.offset : 0,
-          });
-          sendResponseWrapper(Req, res, 200, data.result);
-        } catch (error) {
-          next(error);
-        }
-      },
-    ],
-  },
-  {
     path: `${path}/queue/sync/:syncState`,
     method: 'get',
     handler: [

@@ -8,6 +8,12 @@ import { middlewareLoader } from './middleware';
 import { handleServerExit, handleExceptions } from './middleware/errorMiddleware';
 import { Container } from 'typedi';
 import Config from './../cfg';
+import { logger } from './middleware/logger';
+import * as proxy from 'express-http-proxy';
+import * as urlJoin from 'url-join';
+import * as url from 'url';
+import * as parser from 'body-parser';
+
 SetTimeZone('UTC');
 
 import "../services/tx/index";
@@ -20,8 +26,6 @@ import "../services/merchantapilog/index";
 import "../services/spend/index";
 import "../services/event/index";
 import "../services/updatelog/index";
-
-
 import "../services/use_cases/tx/GetTx";
 import "../services/use_cases/tx/SaveTxs";
 import "../services/use_cases/tx/SyncTxStatus";
@@ -42,24 +46,63 @@ import "../services/use_cases/spends/GetUtxosByAddress";
 import "../services/use_cases/spends/GetUtxosByScriptHash";
 import "../services/use_cases/events/ConnectChannelClientSSE";
 import EnqInitialTxsForSync from '../services/use_cases/tx/EnqInitialTxsForSync';
-import * as proxy from 'express-http-proxy';
+import SaveProxyRequestResponse from '../services/use_cases/proxy/SaveProxyRequestResponse';
 
 async function startServer() {
   let app = express();
-
+  /**
+   * Provide direct mapi access via a proxy
+   *
+   * @param router express router
+   */
   const handleMapiProxy = (router: express.Router) => {
-    // Todo: Abstract this into a merchantapi selection policy for mapi
-    // Todo: mempool.io uses /openapi/mapi/tx .. (note the 'openapi'). Need to figure out how to provide uniform path
-    router.use('/merchantapi', proxy(Config.merchantapi.endpoints[0].url, {
-      userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
-        //data = JSON.parse(proxyResData.toString('utf8'));
-        // data.newProperty = 'exciting data';
-        return proxyResData;
-      },
-      https: true
-    }));
+    // create the miner proxies
+    router.use(parser.urlencoded({ extended: true }));
+    router.use(parser.json({limit: '50mb'}));
+    // default
+    const proxyOptions = function(endpoint, mapiPrefix = undefined) {
+      return {
+        https: true,
+        proxyReqPathResolver: function(req) {
+          return new Promise(function (resolve, reject) {
+            const urlParts = url.parse(endpoint.url);
+            let resolvedPathValue = urlJoin(urlParts.path, req.path);
+            // Add an extra prefix
+            if (mapiPrefix) {
+              resolvedPathValue = urlJoin(urlParts.path, mapiPrefix, req.path);
+            }
+            logger.info('mapi_proxy', { endpoint: endpoint, requestPath: resolvedPathValue});
+            resolve(resolvedPathValue);
+          });
+        },
+        proxyErrorHandler: function(err, res, next) {
+          logger.error('mapi_proxy', { handler: 'proxyErrorHandler', error: err.toString(), stack: err.stack});
+          next(err);
+        },
+        userResDecorator: async (proxyRes, proxyResData, userReq, userRes) => {
+          let saveProxyRequestResponse = Container.get(SaveProxyRequestResponse);
+          await saveProxyRequestResponse.run({
+            userReq: userReq,
+            proxyRes: proxyRes,
+            proxyResData: proxyResData,
+            miner: endpoint.name,
+          });
+          return proxyResData;
+        }
+      };
+    };
+    router.use('/mapi', proxy(Config.merchantapi.endpoints[0].url, proxyOptions(Config.merchantapi.endpoints[0], '/mapi')));
+    let i = 0;
+    for (const endpoint of Config.merchantapi.endpoints) {
+      router.use('/merchantapi/' + endpoint.name, proxy(endpoint.url, proxyOptions(endpoint)));
+      router.use('/merchantapi/' + i, proxy(endpoint.url, proxyOptions(endpoint)));
+      i++;
+    }
   };
-  handleMapiProxy(app);
+
+  if (Config.merchantapi.enableProxy) {
+    handleMapiProxy(app);
+  }
 
   await middlewareLoader(app);
 
@@ -70,6 +113,7 @@ async function startServer() {
       txq: 'hello'
     })
   });
+
   server.listen(Config.api.port);
 
   process.on('unhandledRejection', handleExceptions);

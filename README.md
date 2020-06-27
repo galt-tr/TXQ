@@ -151,6 +151,7 @@ See `cfg/index.ts` for available options.
       sendPolicy: 'ALL_FIRST_PRIORITY_SUCCESS', // 'SERIAL_BACKUP' | 'ALL_FIRST_PRIORITY_SUCCESS';
       statusPolicy: 'SERIAL_BACKUP',            // 'SERIAL_BACKUP'
       enableResponseLogging: true,              // Whether to log every request and response from merchantapi's to the database
+      enableProxy: true,                        // Exposes /merchantapi/<miner name>/mapi/tx endpoints...
       endpoints: [
         {
           name: 'matterpool.io',
@@ -743,35 +744,6 @@ Sets `tx.completed = false` and resets `sync = 1` (pending) and kick starts the 
 }
 ```
 
-
-### Get Pending Queue Tasks
-
-`GET /api/v1/queue/pending?offset=0&limit=1000&pretty`
-
-Params:
-- offset: Skip items
-- limit: Limit ites returned
-- pretty: whether to pretty print
-
-Retrieve pending txid's that are not expired, pending state. (ie: tx.completed == false)
-
-This is useful for seeing which transactions are still pending to be mined.
-
-```javascript
-{{
-   "status":200,
-   "errors":[
-
-   ],
-   "result":[
-      "663ee4c9a17070ee5e91eee7f863eaa92ad6ff3144aab94248d4e3ae7380244d",
-      "a59c5fc76654390239dcb573aee752ad6f2f40ea0e238eac95942ee87f2b9043",
-      "60fa2f8f144ca71e7f573681940f3fcb63125c4d52d12a647e04ff8b408a16ba",
-      "3af19895c4a40b8bb49c5623609099068777a2f4451d5a4186105e2fa2e4c27b"
-   ]
-}
-```
-
 ### Get Queue Tasks by Sync Status
 
 Retrieves the txids in the various sync states:
@@ -1258,6 +1230,74 @@ data: {
 
 ```
 
+## Merchant API Proxy (mapi)
+
+TXQ exposes a `/mapi` endpoint proxy that allows clients to communicate with TXQ directly using the Merchant API.
+
+TXQ automatically saves successfully broadcasted transactions under the default (empty) channel and then retries them as normal until they are settled or expired into the dead-letter queue.
+
+Enable this in the configuration file with (default enabled):
+
+```javascript
+merchantapi: {
+    ...
+    enableProxy: true,                        // Exposes Merchant API proxy endpointts
+    ...
+}
+
+```
+
+Resources:
+
+- <a href='https://developers.matterpool.io/#merchant-api' target="_blank">Merchant API Documentation (MatterPool)</a>
+- <a href='https://github.com/bitcoin-sv-specs/brfc-merchantapi' target="_blank">BRFC Merchant API Specification (Official)</a>
+
+### Query Specific Miner - /merchantapi/<miner-name>/mapi
+
+Select a specific miner to send the Merchant API request to. The identifer `<miner-name>` must match the name in the configuration file.
+All events are logged to the database (enabled by default) under `proxypushtx`, `proxystatustx` and `proxyfeequote`.
+
+Transaction status examples:
+
+`GET /merchantapi/taal.com/mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
+`GET /merchantapi/matterpool.io/mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
+`GET /merchantapi/mempool.io/mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
+
+Push transaction examples:
+
+`POST /merchantapi/taal.com/mapi/tx`
+`POST /merchantapi/matterpool.io/mapi/tx`
+`POST /merchantapi/mempool.io/mapi/tx`
+
+Fee quote examples:
+
+`GET /merchantapi/taal.com/mapi/feeQuote`
+`GET /merchantapi/matterpool.io/mapi/feeQuote`
+`GET /merchantapi/mempool.io/mapi/feeQuote`
+
+### Query Miner by Index - /merchantapi/<miner-endpoint-index>/mapi
+
+Select a specific miner by index (ie: 0 is the first, 1 is the second, etc) to send the Merchant API request to. The identifer `<miner-endpoint-index>` must match the name in the configuration file.
+
+All events are logged to the database (enabled by default) under `proxypushtx`, `proxystatustx` and `proxyfeequote`.
+
+Transaction status examples:
+
+`GET /merchantapi/0/mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
+`GET /merchantapi/1/mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
+`GET /merchantapi/2/mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
+
+Push transaction examples:
+
+`POST /merchantapi/0/mapi/tx`
+`POST /merchantapi/1/mapi/tx`
+`POST /merchantapi/2/mapi/tx`
+
+Fee quote examples:
+
+`GET /merchantapi/0/mapi/feeQuote`
+`GET /merchantapi/1/mapi/feeQuote`
+`GET /merchantapi/2/mapi/feeQuote`
 
 ## Database Schema and Design
 
