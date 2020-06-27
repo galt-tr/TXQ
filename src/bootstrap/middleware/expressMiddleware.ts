@@ -19,6 +19,7 @@ const handleBodyRequestParsing = (router: Router) => {
   router.use(pretty({ query: 'pretty' }));
 };
 
+
 const handleCompression = (router: Router) => {
   router.use(compression());
 };

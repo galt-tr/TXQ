@@ -39,6 +39,7 @@
     + [Get Dead-Letter Transactions Queue](#get-dead-letter-transactions-queue)
     + [Force Resync of Transaction](#force-resync-of-transaction)
     + [Get Pending Queue Tasks](#get-pending-queue-tasks)
+    + [Get Queue Tasks by Sync Status](#get-queue-tasks-by-sync-status)
   * [Server Sent Events (SSE)](#server-sent-events--sse-)
     + [New Transactions Stream (Default channel)](#new-transactions-stream--default-channel-)
     + [New Transactions Stream (Custom Channel)](#new-transactions-stream--custom-channel-)

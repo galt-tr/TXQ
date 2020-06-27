@@ -41,13 +41,28 @@ import "../services/use_cases/spends/GetTxoutsByScriptHash";
 import "../services/use_cases/spends/GetUtxosByAddress";
 import "../services/use_cases/spends/GetUtxosByScriptHash";
 import "../services/use_cases/events/ConnectChannelClientSSE";
-
 import EnqInitialTxsForSync from '../services/use_cases/tx/EnqInitialTxsForSync';
+import * as proxy from 'express-http-proxy';
 
 async function startServer() {
   let app = express();
 
+  const handleMapiProxy = (router: express.Router) => {
+    // Todo: Abstract this into a merchantapi selection policy for mapi
+    // Todo: mempool.io uses /openapi/mapi/tx .. (note the 'openapi'). Need to figure out how to provide uniform path
+    router.use('/merchantapi', proxy(Config.merchantapi.endpoints[0].url, {
+      userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
+        //data = JSON.parse(proxyResData.toString('utf8'));
+        // data.newProperty = 'exciting data';
+        return proxyResData;
+      },
+      https: true
+    }));
+  };
+  handleMapiProxy(app);
+
   await middlewareLoader(app);
+
   let server = createServer(app);
 
   app.get('/', function(req, res) {

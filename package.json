@@ -59,6 +59,7 @@
     "dotenv-safe": "^8.2.0",
     "exponential-backoff": "^3.0.1",
     "express": "^4.17.1",
+    "express-http-proxy": "^1.6.0",
     "express-prettify": "^0.1.1",
     "express-sse": "^0.5.3",
     "helmet": "^3.23.1",
