@@ -33,10 +33,10 @@ const config: IConfig = {
       timeMultiple: process.env.SYNC_BACKOFF_MULTIPLE ? parseInt(process.env.SYNC_BACKOFF_MULTIPLE) : 2,
       // Initial start delay before first re-check
       startingDelay: process.env.SYNC_START_DELAY ? parseInt(process.env.SYNC_START_DELAY) : 1000 * 60,
-      // Max back off time. 20 Minutes is max
-      maxDelay: process.env.SYNC_MAX_DELAY ? parseInt(process.env.SYNC_MAX_DELAY) : 1000 * 60 * 20,
+      // Max back off time. 10 Minutes is max
+      maxDelay: process.env.SYNC_MAX_DELAY ? parseInt(process.env.SYNC_MAX_DELAY) : 1000 * 60 * 10,
       // Max attempts before being put into 'dlq'
-      numOfAttempts: process.env.SYNC_MAX_ATTEMPTS ? parseInt(process.env.SYNC_MAX_ATTEMPTS) : 20
+      numOfAttempts: process.env.SYNC_MAX_ATTEMPTS ? parseInt(process.env.SYNC_MAX_ATTEMPTS) : 40
     }
   },
   enableUpdateLogging: true,                  // Whether to log every update entity to the database
