@@ -1252,6 +1252,25 @@ Resources:
 - <a href='https://developers.matterpool.io/#merchant-api' target="_blank">Merchant API Documentation (MatterPool)</a>
 - <a href='https://github.com/bitcoin-sv-specs/brfc-merchantapi' target="_blank">BRFC Merchant API Specification (Official)</a>
 
+### Query Primary Miner Merchant API - /mapi
+
+Use the first Merchant API endpoint for the request.
+
+All events are logged to the database (enabled by default) under `proxypushtx`, `proxystatustx` and `proxyfeequote`.
+
+Transaction status examples:
+
+`GET /mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
+
+Push transaction examples:
+
+`POST /mapi/tx`
+
+Fee quote examples:
+
+`GET /mapi/feeQuote`
+
+
 ### Query Specific Miner - /merchantapi/<miner-name>/mapi
 
 Select a specific miner to send the Merchant API request to. The identifer `<miner-name>` must match the name in the configuration file.
