@@ -11,6 +11,7 @@
 
 ![TXQ](https://github.com/MatterPool/TXQ/blob/master/preview.png "Bitcoin Transaction Storage Queue Service")
 
+
 - [TXQ: Bitcoin Transaction Storage Queue Service](#txq--bitcoin-transaction-storage-queue-service)
       - [LIVE OPEN PUBLIC SERVER: <a target="_blank" href='https://txq.matterpool.io/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1'>TXQ.MATTERPOOL.IO](#live-open-public-server---a-target---blank--href--https---txqmatterpoolio-api-v1-tx-dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293-pretty-1--txqmatterpoolio)
   * [Motivation](#motivation)
@@ -38,7 +39,6 @@
     + [Get Queue Stats](#get-queue-stats)
     + [Get Dead-Letter Transactions Queue](#get-dead-letter-transactions-queue)
     + [Force Resync of Transaction](#force-resync-of-transaction)
-    + [Get Pending Queue Tasks](#get-pending-queue-tasks)
     + [Get Queue Tasks by Sync Status](#get-queue-tasks-by-sync-status)
   * [Server Sent Events (SSE)](#server-sent-events--sse-)
     + [New Transactions Stream (Default channel)](#new-transactions-stream--default-channel-)
@@ -48,9 +48,12 @@
     + [Merchant API Log Stream](#merchant-api-log-stream)
     + [Address Updates Stream](#address-updates-stream)
     + [Scripthash Updates Stream](#scripthash-updates-stream)
+  * [Merchant API Proxy (mapi)](#merchant-api-proxy--mapi-)
+    + [Query Primary Miner Merchant API - /mapi](#query-primary-miner-merchant-api----mapi)
+    + [Query Specific Miner - /merchantapi/<miner-name>/mapi](#query-specific-miner----merchantapi--miner-name--mapi)
+    + [Query Miner by Index - /merchantapi/<miner-endpoint-index>/mapi](#query-miner-by-index----merchantapi--miner-endpoint-index--mapi)
   * [Database Schema and Design](#database-schema-and-design)
   * [Additional Resources](#additional-resources)
-
 
 ## Motivation
 
