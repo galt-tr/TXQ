@@ -1281,19 +1281,25 @@ All events are logged to the database (enabled by default) under `proxypushtx`, 
 Transaction status examples:
 
 `GET /merchantapi/taal.com/mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
+
 `GET /merchantapi/matterpool.io/mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
+
 `GET /merchantapi/mempool.io/mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
 
 Push transaction examples:
 
 `POST /merchantapi/taal.com/mapi/tx`
+
 `POST /merchantapi/matterpool.io/mapi/tx`
+
 `POST /merchantapi/mempool.io/mapi/tx`
 
 Fee quote examples:
 
 `GET /merchantapi/taal.com/mapi/feeQuote`
+
 `GET /merchantapi/matterpool.io/mapi/feeQuote`
+
 `GET /merchantapi/mempool.io/mapi/feeQuote`
 
 ### Query by Index of Miner Merchant API
@@ -1305,19 +1311,25 @@ All events are logged to the database (enabled by default) under `proxypushtx`, 
 Transaction status examples:
 
 `GET /merchantapi/0/mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
+
 `GET /merchantapi/1/mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
+
 `GET /merchantapi/2/mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
 
 Push transaction examples:
 
 `POST /merchantapi/0/mapi/tx`
+
 `POST /merchantapi/1/mapi/tx`
+
 `POST /merchantapi/2/mapi/tx`
 
 Fee quote examples:
 
 `GET /merchantapi/0/mapi/feeQuote`
+
 `GET /merchantapi/1/mapi/feeQuote`
+
 `GET /merchantapi/2/mapi/feeQuote`
 
 ## Database Schema and Design
