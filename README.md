@@ -11,7 +11,6 @@
 
 ![TXQ](https://github.com/MatterPool/TXQ/blob/master/preview.png "Bitcoin Transaction Storage Queue Service")
 
-
 - [TXQ: Bitcoin Transaction Storage Queue Service](#txq--bitcoin-transaction-storage-queue-service)
       - [LIVE OPEN PUBLIC SERVER: <a target="_blank" href='https://txq.matterpool.io/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1'>TXQ.MATTERPOOL.IO](#live-open-public-server---a-target---blank--href--https---txqmatterpoolio-api-v1-tx-dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293-pretty-1--txqmatterpoolio)
   * [Motivation](#motivation)
@@ -49,9 +48,9 @@
     + [Address Updates Stream](#address-updates-stream)
     + [Scripthash Updates Stream](#scripthash-updates-stream)
   * [Merchant API Proxy (mapi)](#merchant-api-proxy--mapi-)
-    + [Query Primary Miner Merchant API - /mapi](#query-primary-miner-merchant-api----mapi)
-    + [Query Specific Miner - /merchantapi/<miner-name>/mapi](#query-specific-miner----merchantapi--miner-name--mapi)
-    + [Query Miner by Index - /merchantapi/<miner-endpoint-index>/mapi](#query-miner-by-index----merchantapi--miner-endpoint-index--mapi)
+    + [Query Primary Miner Merchant API](#query-primary-miner-merchant-api)
+    + [Query Specific Miner Merchant API](#query-specific-miner-merchant-api)
+    + [Query by Index of Miner Merchant API](#query-by-index-of-miner-merchant-api)
   * [Database Schema and Design](#database-schema-and-design)
   * [Additional Resources](#additional-resources)
 
@@ -1255,7 +1254,7 @@ Resources:
 - <a href='https://developers.matterpool.io/#merchant-api' target="_blank">Merchant API Documentation (MatterPool)</a>
 - <a href='https://github.com/bitcoin-sv-specs/brfc-merchantapi' target="_blank">BRFC Merchant API Specification (Official)</a>
 
-### Query Primary Miner Merchant API - /mapi
+### Query Primary Miner Merchant API
 
 Use the first Merchant API endpoint for the request.
 
@@ -1274,7 +1273,7 @@ Fee quote examples:
 `GET /mapi/feeQuote`
 
 
-### Query Specific Miner - /merchantapi/<miner-name>/mapi
+### Query Specific Miner Merchant API
 
 Select a specific miner to send the Merchant API request to. The identifer `<miner-name>` must match the name in the configuration file.
 All events are logged to the database (enabled by default) under `proxypushtx`, `proxystatustx` and `proxyfeequote`.
@@ -1297,7 +1296,7 @@ Fee quote examples:
 `GET /merchantapi/matterpool.io/mapi/feeQuote`
 `GET /merchantapi/mempool.io/mapi/feeQuote`
 
-### Query Miner by Index - /merchantapi/<miner-endpoint-index>/mapi
+### Query by Index of Miner Merchant API
 
 Select a specific miner by index (ie: 0 is the first, 1 is the second, etc) to send the Merchant API request to. The identifer `<miner-endpoint-index>` must match the name in the configuration file.
 
