@@ -1260,15 +1260,15 @@ Use the first Merchant API endpoint for the request.
 
 All events are logged to the database (enabled by default) under `proxypushtx`, `proxystatustx` and `proxyfeequote`.
 
-Transaction status examples:
+**Transaction status examples:**
 
 `GET /mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
 
-Push transaction examples:
+**Push transaction examples:**
 
 `POST /mapi/tx`
 
-Fee quote examples:
+**Fee quote examples:**
 
 `GET /mapi/feeQuote`
 
@@ -1278,7 +1278,7 @@ Fee quote examples:
 Select a specific miner to send the Merchant API request to. The identifer `<miner-name>` must match the name in the configuration file.
 All events are logged to the database (enabled by default) under `proxypushtx`, `proxystatustx` and `proxyfeequote`.
 
-Transaction status examples:
+**Transaction status examples:**
 
 `GET /merchantapi/taal.com/mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
 
@@ -1286,7 +1286,7 @@ Transaction status examples:
 
 `GET /merchantapi/mempool.io/mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
 
-Push transaction examples:
+**Push transaction examples:**
 
 `POST /merchantapi/taal.com/mapi/tx`
 
@@ -1294,7 +1294,7 @@ Push transaction examples:
 
 `POST /merchantapi/mempool.io/mapi/tx`
 
-Fee quote examples:
+**Fee quote examples:**
 
 `GET /merchantapi/taal.com/mapi/feeQuote`
 
@@ -1308,7 +1308,7 @@ Select a specific miner by index (ie: 0 is the first, 1 is the second, etc) to s
 
 All events are logged to the database (enabled by default) under `proxypushtx`, `proxystatustx` and `proxyfeequote`.
 
-Transaction status examples:
+**Transaction status examples:**
 
 `GET /merchantapi/0/mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
 
@@ -1316,7 +1316,7 @@ Transaction status examples:
 
 `GET /merchantapi/2/mapi/tx/10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2`
 
-Push transaction examples:
+**Push transaction examples:**
 
 `POST /merchantapi/0/mapi/tx`
 
@@ -1324,7 +1324,7 @@ Push transaction examples:
 
 `POST /merchantapi/2/mapi/tx`
 
-Fee quote examples:
+**Fee quote examples:**
 
 `GET /merchantapi/0/mapi/feeQuote`
 
