@@ -8,8 +8,8 @@
 #### LIVE OPEN PUBLIC SERVER: <a target="_blank" href='https://txq.matterpool.io/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1'>TXQ.MATTERPOOL.IO
 </a>
 
-
 ![TXQ](https://github.com/MatterPool/TXQ/blob/master/preview.png "Bitcoin Transaction Storage Queue Service")
+
 
 - [TXQ: Bitcoin Transaction Storage Queue Service](#txq--bitcoin-transaction-storage-queue-service)
       - [LIVE OPEN PUBLIC SERVER: <a target="_blank" href='https://txq.matterpool.io/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1'>TXQ.MATTERPOOL.IO](#live-open-public-server---a-target---blank--href--https---txqmatterpoolio-api-v1-tx-dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293-pretty-1--txqmatterpoolio)
@@ -48,11 +48,13 @@
     + [Address Updates Stream](#address-updates-stream)
     + [Scripthash Updates Stream](#scripthash-updates-stream)
   * [Merchant API Proxy (mapi)](#merchant-api-proxy--mapi-)
+    + [Storing `channel`, `metadata`, and `tags`](#storing--channel----metadata---and--tags-)
     + [Query Primary Miner Merchant API](#query-primary-miner-merchant-api)
     + [Query Specific Miner Merchant API](#query-specific-miner-merchant-api)
     + [Query by Index of Miner Merchant API](#query-by-index-of-miner-merchant-api)
   * [Database Schema and Design](#database-schema-and-design)
   * [Additional Resources](#additional-resources)
+
 
 ## Motivation
 
@@ -1234,6 +1236,8 @@ data: {
 
 ## Merchant API Proxy (mapi)
 
+**Motivation**
+
 TXQ exposes a `/mapi` endpoint proxy that allows clients to communicate with TXQ directly using the Merchant API.
 
 TXQ automatically saves successfully broadcasted transactions under the default (empty) channel and then retries them as normal until they are settled or expired into the dead-letter queue.
@@ -1253,6 +1257,20 @@ Resources:
 
 - <a href='https://developers.matterpool.io/#merchant-api' target="_blank">Merchant API Documentation (MatterPool)</a>
 - <a href='https://github.com/bitcoin-sv-specs/brfc-merchantapi' target="_blank">BRFC Merchant API Specification (Official)</a>
+
+### Storing `channel`, `metadata`, and `tags`
+
+The Merchant API specification does not accept anything other than `rawtx` for `POST /mapi/tx` (push tx) therefore we leverage HTTP
+headers to allow the client to specify `channel`, `metadata`, and `tags`.
+
+For example, set the following HTTP headers to attach additional information:
+
+`channel` : `someChannelName`
+
+`metadata`: `{"description": "mydescription", "title": "a cool title"}`
+
+`tags`: `["animals", "bitcoin"]`
+
 
 ### Query Primary Miner Merchant API
 
