@@ -56,10 +56,8 @@ async function startServer() {
    * @param router express router
    */
   const handleMapiProxy = (router: express.Router) => {
-    // create the miner proxies
     router.use(parser.urlencoded({ extended: true }));
     router.use(parser.json({limit: '50mb'}));
-    // default
     const proxyOptions = function(endpoint, mapiPrefix = undefined) {
       return {
         https: true,
@@ -91,7 +89,9 @@ async function startServer() {
         }
       };
     };
+    // Create a default /mapi route for the first merchantapi (for now)
     router.use('/mapi', proxy(Config.merchantapi.endpoints[0].url, proxyOptions(Config.merchantapi.endpoints[0], '/mapi')));
+    // Create /merchantapi/mapi routes by miner index and miner name
     let i = 0;
     for (const endpoint of Config.merchantapi.endpoints) {
       router.use('/merchantapi/' + endpoint.name, proxy(endpoint.url, proxyOptions(endpoint)));
