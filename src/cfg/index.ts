@@ -9,7 +9,7 @@ if (!envFound) {
 
 const config: IConfig = {
   appname: 'txq',
-  network: process.env.NETWORK === 'testnet' ? 'testnet' : undefined,
+  network: process.env.NETWORK === 'testnet' ? 'testnet' : 'livenet', // Set the merchantapi.endpoints below for testnet
   baseurl: process.env.BASEURL || 'http://localhost',
   env: process.env.NODE_ENV || 'development',
   api: {
@@ -48,7 +48,7 @@ const config: IConfig = {
     enableProxy: true,                        // Exposes /merchantapi/<miner name>/mapi/tx endpoints...
     endpoints: [
       {
-        name: 'taal.com',
+        name: 'merchantapi.taal.com',
         url: 'https://merchantapi.taal.com',
         headers: {
         }
@@ -61,11 +61,17 @@ const config: IConfig = {
         }
       },
       {
-        name: 'matterpool.io',
+        name: 'merchantapi.matterpool.io',
         url: 'https://merchantapi.matterpool.io',
         headers: {
         }
       },
+      /*{
+        name: 'merchantapi-testnet.mattercloud.io',
+        url: 'https://merchantapi-testnet.mattercloud.io',
+        headers: {
+        }
+      },*/
     ]
   },
   db: {

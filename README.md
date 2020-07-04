@@ -1,11 +1,11 @@
 # TXQ: Bitcoin Transaction Storage Queue Service
-> Self-hosted Bitcoin BSV transaction storage and UTXO indexer for developers.
+> Self-hosted Bitcoin BSV transaction publisher, storage and UTXO indexer for developers.
 >
 > LICENSE: MIT
 >
 > <a href='https://matterpool.io'>matterpool.io</a>
 
-#### LIVE OPEN PUBLIC SERVER: <a target="_blank" href='https://txq.matterpool.io/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1'>TXQ.MATTERPOOL.IO
+#### LIVE OPEN PUBLIC (US-WEST-2) SERVER: <a target="_blank" href='https://public.txq-app.com/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1'>PUBLIC.TXQ-APP.COM
 </a>
 
 ![TXQ](https://github.com/MatterPool/TXQ/blob/master/preview.png "Bitcoin Transaction Storage Queue Service")
