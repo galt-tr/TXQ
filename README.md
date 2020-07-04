@@ -128,10 +128,13 @@ Migrations:
 
 ## Configuration
 
+#### NOTE: Configure to use 'testnet' by setting network: 'testnet' or leave undefined (mainnet)
+
 See `cfg/index.ts` for available options.
 
 ```javascript
 {
+    network: undefined, // Set to 'testnet' for testnet addresses
     // ...
     queue: {
       // Max number of concurrent requests to sync tx status from merchantapi

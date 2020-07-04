@@ -13,20 +13,3 @@ EnvironmentFile=/home/ubuntu/txq/.env
 LimitNOFILE=400000
 [Install]
 WantedBy=multi-user.target
-
-
-[Unit]
-Description=Nexa
-
-[Service]
-PIDFile=/tmp/Nexa-99.pid
-User=root
-Group=root
-Restart=always
-KillSignal=SIGQUIT
-WorkingDirectory=/home/ec2-user/xoken
-ExecStart=./xoken-nexa
-# EnvironmentFile=/home/ubuntu/txq/.env
-LimitNOFILE=400000
-[Install]
-WantedBy=multi-user.target

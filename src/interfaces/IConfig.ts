@@ -59,6 +59,7 @@ export interface ISyncQueue {
 
 export interface IConfig {
   appname?: string;
+  network?: 'testnet' | 'mainnet' | 'livenet' | undefined,
   baseurl?: string;
   env?: string;
   enableUpdateLogging?: boolean;

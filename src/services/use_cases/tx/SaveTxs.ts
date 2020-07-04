@@ -107,7 +107,7 @@ export default class SaveTxs extends UseCase {
             const scripthash = bsv.crypto.Hash.sha256(buffer).reverse().toString('hex');
             let address = '';
             try {
-              address = bsv.Address.fromScript(parsedTx.outputs[i].script).toString();
+              address = bsv.Address.fromScript(parsedTx.outputs[i].script, Config.network).toString();
             } catch (err) {
               // Do nothing
             }
