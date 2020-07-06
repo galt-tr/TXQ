@@ -45,6 +45,7 @@ export default class SaveTxs extends UseCase {
         });
         let expectedTxid = txid;
         let didExistBefore = await this.txmetaService.isTxMetaExist(txid, cleanedChannel);
+        const nosync = !!params.set[txid].nosync;
         const rawtx = params.set[txid].rawtx;
         const metadata = params.set[txid].metadata;
         const tags = params.set[txid].tags;
@@ -139,11 +140,14 @@ export default class SaveTxs extends UseCase {
         }
 
         await this.txsyncService.insertTxsync(
-          expectedTxid
+          expectedTxid,
+          nosync
         );
 
-        // Enqueue
-        this.queueService.enqTxStatus(txid);
+        if (!nosync) {
+          this.queueService.enqTxStatus(txid);
+        }
+
         savedTxs.push(expectedTxid);
 
         let useCaseOutcome = await this.getTx.run({ txid: expectedTxid, channel: cleanedChannel, rawtx: true});

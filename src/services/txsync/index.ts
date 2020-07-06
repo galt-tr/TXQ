@@ -16,8 +16,8 @@ export default class TxsyncService {
     return entity;
   }
 
-  public async insertTxsync(txid: string) {
-    await this.txsyncModel.insertTxsync(txid);
+  public async insertTxsync(txid: string, nosync?: boolean) {
+    await this.txsyncModel.insertTxsync(txid, nosync);
   }
 
   public async getTxsForSync() {

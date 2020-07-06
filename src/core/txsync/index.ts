@@ -32,9 +32,9 @@ class TxsyncModel {
     let result: any;
 
     if (dlq) {
-      result = await this.db.query(sql`SELECT txid FROM txsync WHERE dlq = ${dlq} AND sync != 2`);
+      result = await this.db.query(sql`SELECT txid FROM txsync WHERE dlq = ${dlq}`);
     } else {
-      result = await this.db.query(sql`SELECT txid FROM txsync WHERE dlq IS NOT NULL AND sync != 2`);
+      result = await this.db.query(sql`SELECT txid FROM txsync WHERE dlq IS NOT NULL`);
     }
 
     const txids = [];
@@ -76,9 +76,10 @@ class TxsyncModel {
     return result;
   }
 
-  public async insertTxsync(txid: string): Promise<string> {
+  public async insertTxsync(txid: string, nosync?: boolean): Promise<string> {
     const now = DateUtil.now();
-    let result: any = await this.db.query(sql`INSERT INTO txsync(txid, updated_at, created_at, sync, status_retries) VALUES (${txid}, ${now}, ${now}, 1, 0) ON CONFLICT DO NOTHING`);
+    let syncInitial =  nosync ? 0 : 1; // Otherwise 'pending'
+    let result: any = await this.db.query(sql`INSERT INTO txsync(txid, updated_at, created_at, sync, status_retries) VALUES (${txid}, ${now}, ${now}, ${syncInitial}, 0) ON CONFLICT DO NOTHING`);
     return result;
   }
 

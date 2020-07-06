@@ -259,6 +259,8 @@ Example:
 
 Save a transaction and/or txid, attaching optional metadata. The txid must match the rawtx's txid.
 
+NOTE: To only store the trasaction and not attempt to broadcas or get miner status set `nosync: true` (See example below)
+
 `POST /api/v1/tx`
 
 ```javascript
@@ -277,7 +279,8 @@ Save a transaction and/or txid, attaching optional metadata. The txid must match
             "image":"",
             "description":"DOOOOOO"
          },
-         "tags":[ "bitcoin", "bsv"]
+         "tags":[ "bitcoin", "bsv"],
+         "nosync": false // Set to true to not attempt synchronizing
       }
    }
 }

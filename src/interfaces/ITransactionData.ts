@@ -27,6 +27,7 @@ export interface ITransactionStatus {
 
 export interface ITransactionData {
   txid?: string;
+  nosync?: boolean;
   rawtx: string;
   blockhash?: string;
   blocktime?: number;
