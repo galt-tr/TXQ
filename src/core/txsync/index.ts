@@ -76,10 +76,11 @@ class TxsyncModel {
     return result;
   }
 
+
   public async insertTxsync(txid: string, nosync?: boolean): Promise<string> {
     const now = DateUtil.now();
     let syncInitial =  nosync ? 0 : 1; // Otherwise 'pending'
-    let result: any = await this.db.query(sql`INSERT INTO txsync(txid, updated_at, created_at, sync, status_retries) VALUES (${txid}, ${now}, ${now}, ${syncInitial}, 0) ON CONFLICT DO UPDATE SET sync=${syncInitial}`);
+    let result: any = await this.db.query(sql`INSERT INTO txsync(txid, updated_at, created_at, sync, status_retries) VALUES (${txid}, ${now}, ${now}, ${syncInitial}, 0) ON CONFLICT(txid) DO UPDATE SET sync=${syncInitial}`);
     return result;
   }
 
@@ -92,6 +93,12 @@ class TxsyncModel {
   public async updateTxsync(txid: string, sync: sync_state): Promise<string> {
     const now = DateUtil.now();
     let result: any = await this.db.query(sql`UPDATE txsync SET sync = ${sync}, updated_at=${now} WHERE txid = ${txid}`);
+    return result;
+  }
+
+  public async updateTxsyncAndClearDlq(txid: string, sync: sync_state): Promise<string> {
+    const now = DateUtil.now();
+    let result: any = await this.db.query(sql`UPDATE txsync SET sync = ${sync}, updated_at=${now}, dlq = null WHERE txid = ${txid}`);
     return result;
   }
 }

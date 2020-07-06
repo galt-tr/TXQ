@@ -67,7 +67,7 @@ export default class TxService {
       txid,
       true
     );
-    await this.txsyncModel.updateTxsync(
+    await this.txsyncModel.updateTxsyncAndClearDlq(
       txid,
       sync_state.sync_success
     );

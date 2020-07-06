@@ -73,4 +73,11 @@ export default class TxsyncService {
       sync
     );
   }
+
+  public async updateTxsyncAndClearDlq(txid: string, sync: sync_state) {
+    await this.txsyncModel.updateTxsyncAndClearDlq(
+      txid,
+      sync
+    );
+  }
 }

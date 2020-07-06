@@ -54,10 +54,10 @@ class TxModel {
   public async updateCompleted(txid: string, completed?: boolean): Promise<string> {
     const now = DateUtil.now();
     if (completed) {
-      let result: any = await this.db.query(sql`UPDATE tx SET updated_at=${now}, completed = true, dlq = null WHERE txid = ${txid}`);
+      let result: any = await this.db.query(sql`UPDATE tx SET updated_at=${now}, completed = true WHERE txid = ${txid}`);
       return result;
     } else {
-      let result: any = await this.db.query(sql`UPDATE tx SET updated_at=${now}, completed = false, dlq = null WHERE txid = ${txid}`);
+      let result: any = await this.db.query(sql`UPDATE tx SET updated_at=${now}, completed = false WHERE txid = ${txid}`);
       return result;
     }
   }
