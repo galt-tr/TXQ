@@ -79,7 +79,7 @@ class TxsyncModel {
   public async insertTxsync(txid: string, nosync?: boolean): Promise<string> {
     const now = DateUtil.now();
     let syncInitial =  nosync ? 0 : 1; // Otherwise 'pending'
-    let result: any = await this.db.query(sql`INSERT INTO txsync(txid, updated_at, created_at, sync, status_retries) VALUES (${txid}, ${now}, ${now}, ${syncInitial}, 0) ON CONFLICT DO NOTHING`);
+    let result: any = await this.db.query(sql`INSERT INTO txsync(txid, updated_at, created_at, sync, status_retries) VALUES (${txid}, ${now}, ${now}, ${syncInitial}, 0) ON CONFLICT DO UPDATE SET sync=${syncInitial}`);
     return result;
   }
 
