@@ -54,7 +54,8 @@ export interface ISyncQueue {
     jitter: string;
     timeMultiple: number;
     numOfAttempts: number;
-  }
+  },
+  nosync: boolean;
 }
 
 export interface IConfig {

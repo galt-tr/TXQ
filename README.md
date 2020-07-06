@@ -151,7 +151,10 @@ See `cfg/index.ts` for available options.
         maxDelay: process.env.SYNC_MAX_DELAY ? parseInt(process.env.SYNC_MAX_DELAY) : 1000 * 60 * 20,
         // Max attempts before being put into 'dlq'
         numOfAttempts: process.env.SYNC_MAX_ATTEMPTS ? parseInt(process.env.SYNC_MAX_ATTEMPTS) : 20
-      }
+      },
+      // If 'nosync' is true, then the server process always places new transactions into txsync.state=0 (sync_none)
+      // In other words, then TXQ behaves as a datastore and makes no attempts to broadcast transations or settle status.
+      nosync: false
     },
     enableUpdateLogging: true,                  // Whether to log every update entity to the database
     merchantapi: {

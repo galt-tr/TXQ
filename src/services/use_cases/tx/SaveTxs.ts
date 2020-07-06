@@ -45,7 +45,8 @@ export default class SaveTxs extends UseCase {
         });
         let expectedTxid = txid;
         let didExistBefore = await this.txmetaService.isTxMetaExist(txid, cleanedChannel);
-        const nosync = !!params.set[txid].nosync;
+        // Do not sync if set globally
+        const nosync = Config.queue.nosync ? Config.queue.nosync : !!params.set[txid].nosync;
         const rawtx = params.set[txid].rawtx;
         const metadata = params.set[txid].metadata;
         const tags = params.set[txid].tags;
