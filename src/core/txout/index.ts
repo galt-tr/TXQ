@@ -7,36 +7,73 @@ class TxoutModel {
 
   public async getTxoutByScriptHash(scripthash: string, offset: number, limit: number, script?: boolean, unspent?: boolean): Promise<string> {
     let result: any;
+    let split = scripthash.split(',');
     if (script) {
       if (unspent) {
-        result = await this.db.query(sql`SELECT * FROM txout WHERE scripthash = ${scripthash} AND spend_txid IS NULL OFFSET ${offset} LIMIT ${limit}`);
+        result = await this.db.query(sql`
+        SELECT * FROM txout
+        WHERE scripthash = ANY(${sql.array(split, 'varchar')}) AND
+        spend_txid IS NULL
+        OFFSET ${offset}
+        LIMIT ${limit}`);
       } else {
-        result = await this.db.query(sql`SELECT * FROM txout WHERE scripthash = ${scripthash} OFFSET ${offset} LIMIT ${limit}`);
+        result = await this.db.query(sql`
+        SELECT * FROM txout
+        WHERE scripthash = ANY(${sql.array(split, 'varchar')})
+        OFFSET ${offset}
+        LIMIT ${limit}`);
       }
     } else {
       if (unspent) {
-        result = await this.db.query(sql`SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout WHERE scripthash = ${scripthash} AND spend_txid IS NULL OFFSET ${offset} LIMIT ${limit}`);
+        result = await this.db.query(sql`
+        SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout
+        WHERE scripthash = ANY(${sql.array(split, 'varchar')}) AND
+        spend_txid IS NULL
+        OFFSET ${offset}
+        LIMIT ${limit}`);
       } else {
-        result = await this.db.query(sql`SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout WHERE scripthash = ${scripthash} OFFSET ${offset} LIMIT ${limit}`);
+        result = await this.db.query(sql`
+        SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout
+        WHERE scripthash = ANY(${sql.array(split, 'varchar')})
+        OFFSET ${offset}
+        LIMIT ${limit}`);
       }
     }
-    return result.rows
+    return result.rows;
   }
 
   public async getTxoutByAddress(address: string, offset: number, limit: number, script?: boolean, unspent?: boolean): Promise<string> {
     let result: any;
+    let split = address.split(',');
     if (script) {
       if (unspent) {
-        result = await this.db.query(sql`SELECT * FROM txout WHERE address = ${address} AND spend_txid IS NULL OFFSET ${offset} LIMIT ${limit}`);
+        result = await this.db.query(sql`
+        SELECT * FROM txout
+        WHERE address = ANY(${sql.array(split, 'varchar')}) AND
+        spend_txid IS NULL
+        OFFSET ${offset}
+        LIMIT ${limit}`);
       } else {
-        result = await this.db.query(sql`SELECT * FROM txout WHERE address = ${address} OFFSET ${offset} LIMIT ${limit}`);
-
+        result = await this.db.query(sql`
+        SELECT * FROM txout
+        WHERE address = ANY(${sql.array(split, 'varchar')})
+        OFFSET ${offset}
+        LIMIT ${limit}`);
       }
     } else {
       if (unspent) {
-        result = await this.db.query(sql`SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout WHERE address = ${address} AND spend_txid IS NULL OFFSET ${offset} LIMIT ${limit}`);
+        result = await this.db.query(sql`
+        SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout
+        WHERE address = ANY(${sql.array(split, 'varchar')}) AND
+        spend_txid IS NULL
+        OFFSET ${offset}
+        LIMIT ${limit}`);
       } else {
-        result = await this.db.query(sql`SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout WHERE address = ${address} OFFSET ${offset} LIMIT ${limit}`);
+        result = await this.db.query(sql`
+        SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout
+        WHERE address = ANY(${sql.array(split, 'varchar')})
+        OFFSET ${offset}
+        LIMIT ${limit}`);
       }
     }
     return result.rows;
@@ -44,10 +81,16 @@ class TxoutModel {
 
   public async getTxout(txid: string, index: number, script?: boolean): Promise<string> {
     if (script) {
-      let result: any = await this.db.query(sql`SELECT * FROM txout WHERE txid = ${txid} AND index = ${index}`);
+      let result: any = await this.db.query(sql`
+      SELECT * FROM txout
+      WHERE txid = ${txid} AND
+      index = ${index}`);
       return result.rows[0];
     } else {
-      let result: any = await this.db.query(sql`SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout WHERE txid = ${txid} AND index = ${index}`);
+      let result: any = await this.db.query(sql`
+      SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout
+      WHERE txid = ${txid} AND
+      index = ${index}`);
       return result.rows[0];
     }
   }

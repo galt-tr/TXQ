@@ -12,6 +12,31 @@ import { sendErrorWrapper } from '../../../util/sendErrorWrapper';
 
 export default [
   {
+    path: `${path}/txout/txid/:txid`,
+    method: 'get',
+    handler: [
+      async (Req: Request, res: Response, next: NextFunction) => {
+        try {
+          let getTxout = Container.get(GetTxout);
+          let data = await getTxout.run({
+            txid: Req.params.txid,
+            index: Req.params.index,
+            script: Req.query.script === '0' ? false : true,
+          });
+
+          sendResponseWrapper(Req, res, 200, data.result);
+
+        } catch (error) {
+          if (error instanceof ResourceNotFoundError) {
+            sendErrorWrapper(res, 404, error.toString());
+            return;
+          }
+          next(error);
+        }
+      },
+    ],
+  },
+  {
     path: `${path}/txout/txid/:txid/:index`,
     method: 'get',
     handler: [
@@ -111,6 +136,7 @@ export default [
           let data = await getUtxosByAddress.run({
             address: Req.params.address,
             limit: Req.query.limit ? Req.query.limit : 1000,
+            script: Req.query.script === '0' ? false : true,
             offset: Req.query.offset ? Req.query.offset : 0
           });
 

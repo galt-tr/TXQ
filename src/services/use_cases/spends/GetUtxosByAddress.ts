@@ -11,8 +11,8 @@ export default class GetUtxosByAddress extends UseCase {
     super();
   }
 
-  public async run(params: { address: string, limit: any, offset: any}): Promise<UseCaseOutcome> {
-    let entities = await this.txoutService.getTxoutByAddress(params.address, params.offset, params.limit, false, true);
+  public async run(params: { address: string, limit: any, script?: boolean, offset: any}): Promise<UseCaseOutcome> {
+    let entities = await this.txoutService.getTxoutByAddress(params.address, params.offset, params.limit, params.script, true);
     let utxoFormatted = [];
     utxoFormatted = entities.map((e) => {
       return {
