@@ -1,7 +1,6 @@
 import { Service, Inject } from 'typedi';
 import { UseCase } from '../UseCase';
 import { UseCaseOutcome } from '../UseCaseOutcome';
-import * as bsv from 'bsv';
 
 @Service('getTxoutsByAddress')
 export default class GetTxoutsByAddress extends UseCase {

@@ -95,6 +95,39 @@ class TxoutModel {
     }
   }
 
+  public async getTxoutsByOutpointArray(txOutpoints: Array<{ txid: string, index: string }>, script?: boolean): Promise<any[]> {
+    // Hack until we figure out how to do slonik tuple = ANY
+    // See: https://github.com/gajus/slonik/issues/192
+    const txidToIndexMap = {};
+    const txidsOnly = [];
+    for (let index = 0; index < txOutpoints.length; index++) {
+      txidToIndexMap[txOutpoints[index].txid] = txidToIndexMap[txOutpoints[index].txid] || {};
+      txidToIndexMap[txOutpoints[index].txid][txOutpoints[index].index] = true;
+      txidsOnly.push(txOutpoints[index].txid);
+    }
+    let result: any;
+    if (script) {
+      const i = sql`
+      SELECT * FROM txout
+      WHERE txid = ANY(${sql.array(txidsOnly, 'varchar')})`;
+      result = await this.db.query(i)
+    } else {
+      result = await this.db.query(sql`
+      SELECT txid, index, address, scripthash, satoshis, spend_txid, spend_index FROM txout
+      WHERE txid = ANY(${sql.array(txidsOnly, 'varchar')})`);
+    }
+    const results = [];
+    // Walk the results and only keep the txouts that match txid+index
+    for (const row of result.rows) {
+      if (txidToIndexMap[row.txid]) {
+        if (txidToIndexMap[row.txid][row.index]) {
+          results.push(row);
+        }
+      }
+    }
+    return results;
+  }
+
   public async saveTxout(txid: string, index: number, address: string | null | undefined, scripthash: string, script: string, satoshis: number): Promise<string> {
     let result: any = await this.db.query(sql`INSERT INTO txout(txid, index, address, scripthash, script, satoshis) VALUES (${txid}, ${index}, ${address}, ${scripthash}, ${script}, ${satoshis}) ON CONFLICT DO NOTHING`);
     return result;

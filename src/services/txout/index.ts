@@ -21,12 +21,8 @@ export default class TxoutService {
     return entity;
   }
 
-  public async getTxout(txid: string, index: number, script?: boolean) {
-    let entity = await this.txoutModel.getTxout(txid, index, script);
-    if (!entity) {
-      throw new ResourceNotFoundError();
-    }
-    return entity;
+  public async getTxoutsByOutpointArray(txOutpoints: {txid:  string, index: string}, script?: boolean) {
+    return await this.txoutModel.getTxoutsByOutpointArray(txOutpoints, script);
   }
 
   public async saveTxout(txid: string, index: number, address: string | null | undefined, scripthash: string, script: string, satoshis: number) {

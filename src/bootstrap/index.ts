@@ -45,6 +45,7 @@ import "../services/use_cases/spends/GetTxoutsByScriptHash";
 import "../services/use_cases/spends/GetUtxosByAddress";
 import "../services/use_cases/spends/GetUtxosByScriptHash";
 import "../services/use_cases/events/ConnectChannelClientSSE";
+import "../services/use_cases/spends/GetTxoutsByOutpointArray";
 import EnqInitialTxsForSync from '../services/use_cases/tx/EnqInitialTxsForSync';
 import SaveProxyRequestResponse from '../services/use_cases/proxy/SaveProxyRequestResponse';
 

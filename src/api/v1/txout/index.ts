@@ -9,21 +9,20 @@ import GetUtxosByScriptHash from '../../../services/use_cases/spends/GetUtxosByS
 import ResourceNotFoundError from '../../../services/error/ResourceNotFoundError';
 import { sendResponseWrapper } from '../../../util/sendResponseWrapper';
 import { sendErrorWrapper } from '../../../util/sendErrorWrapper';
+import GetTxoutsByOutpointArray from '../../../services/use_cases/spends/GetTxoutsByOutpointArray';
 
 export default [
   {
-    path: `${path}/txout/txid/:txid`,
+    path: `${path}/txout/txid/:txOutpoints`,
     method: 'get',
     handler: [
       async (Req: Request, res: Response, next: NextFunction) => {
         try {
-          let getTxout = Container.get(GetTxout);
+          let getTxout = Container.get(GetTxoutsByOutpointArray);
           let data = await getTxout.run({
-            txid: Req.params.txid,
-            index: Req.params.index,
+            txOutpoints: Req.params.txOutpoints,
             script: Req.query.script === '0' ? false : true,
           });
-
           sendResponseWrapper(Req, res, 200, data.result);
 
         } catch (error) {

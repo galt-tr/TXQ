@@ -570,11 +570,47 @@ Retrieve spent status of a txoutput (txid + index)
 }
 ```
 
+### Get Outpoints Spend Status (Batch)
+
+`GET /api/v1/txout/txid/:txouts?pretty=1`
+
+Example: Use for `txouts` single outpoints like `dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293_o0` or multiple: `dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293_o0,dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293_o0`
+
+`https://public.txq-app.com/api/v1/txout/txid/39e6f4652c9464eae17219d2c9ed031e917942fc3539ba98ce1639df024659cc_o0,39e6f4652c9464eae17219d2c9ed031e917942fc3539ba98ce1639df024659cc_o1?pretty=1`
+
+Params:
+- txouts: transaction outputs.  Ex: `dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293_o0`
+- index: transaction outpoint index
+- pretty: whether to pretty print
+
+Retrieve spent status of a txoutput (txid + index)
+
+```javascript
+{
+  "status": 200,
+  "errors": [],
+  "result": [
+    {
+      "txid": "dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293",
+      "index": 0,
+      "script": "76a914a1f93cb1d124a82f8f86b06ef97a4fd6d77c04e288ac",
+      "address": "1FmSNBWW2m6d6FDUWxDjaJo9jhNAs9Pekr",
+      "scripthash": "ee7beac2fcc315b37f190530d743769f255b1d413edd6e51bbc003022753f909",
+      "satoshis": 31994680111,
+      "is_receive": true,
+      "spend_txid": null,
+      "spend_index": null
+    }
+  ]
+}
+```
+
+
 ### Get Address Outputs
 
 `GET /api/v1/txout/address/:address?pretty=1&offset=0&limit=1000`
 
-**NOTE:* You can specify multiple addresses with the comma ',' example:
+**NOTE:** You can specify multiple addresses with the comma ',' example:
 
 `GET /api/v1/txout/address/12k3rKTAsDFtydSJsKueMFxXAfAmfQGJqP,1KkjsX6d3cFiCKb6vcSAw3KAm41JdhjQkP?pretty=1&offset=0&limit=1000`
 
@@ -610,7 +646,7 @@ Retrieve outputs involving address. Note: receives are tracked only for now.
 
 `GET /api/v1/txout/address/:address/utxo?pretty=1&offset=0&limit=1000`
 
-**NOTE:* You can specify multiple addresses with the comma ',' example:
+**NOTE:** You can specify multiple addresses with the comma ',' example:
 
 `GET /api/v1/txout/address/12k3rKTAsDFtydSJsKueMFxXAfAmfQGJqP,1KkjsX6d3cFiCKb6vcSAw3KAm41JdhjQkP/utxo?pretty=1&offset=0&limit=1000`
 
@@ -645,7 +681,7 @@ Retrieve outputs involving address. Note: receives are tracked only for now.
 `GET /api/v1/txout/scripthash/:scripthash?pretty=1&offset=0&limit=1000`
 
 
-**NOTE:* You can specify multiple scripthashes with the comma ',' example:
+**NOTE:** You can specify multiple scripthashes with the comma ',' example:
 
 `GET /api/v1/txout/scripthash/d4f225bdd856437e519cf65c1ec9a108b3c2d10f993cd5a66e5078792105eb7e,17f0fb74c18f2989f69d8396cd36df665ba15492000281a484545a9ec3b1c66e?pretty=1&offset=0&limit=1000`
 
@@ -683,7 +719,7 @@ Retrieve outputs involving scripthash. Note: receives are tracked only for now.
 `GET /api/v1/txout/scripthash/:scripthash/utxo?pretty=1&offset=0&limit=1000`
 
 
-**NOTE:* You can specify multiple scripthashes with the comma ',' example:
+**NOTE:** You can specify multiple scripthashes with the comma ',' example:
 
 `GET /api/v1/txout/scripthash/d4f225bdd856437e519cf65c1ec9a108b3c2d10f993cd5a66e5078792105eb7e,17f0fb74c18f2989f69d8396cd36df665ba15492000281a484545a9ec3b1c66e/utxo?pretty=1&offset=0&limit=1000`
 
