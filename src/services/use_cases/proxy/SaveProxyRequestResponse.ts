@@ -6,6 +6,9 @@ import Config from './../../../cfg';
 import * as bsv from 'bsv';
 import { Request } from 'express';
 import * as Minercraft from 'minercraft';
+import { MerchantapilogEventTypes } from '../../merchantapilog';
+import { StatusTxUtil } from '../../helpers/StatusTxUtil';
+import { ChannelMetaUtil } from '../../helpers/ChannelMetaUtil';
 
 @Service('saveProxyRequestResponse')
 export default class SaveProxyRequestResponse extends UseCase {
@@ -23,10 +26,25 @@ export default class SaveProxyRequestResponse extends UseCase {
     proxyResData: any,
     miner: string,
   }): Promise<UseCaseOutcome> {
-    if ((params.proxyRes.statusCode <= 299 && params.proxyRes.statusCode >= 200) || params.proxyRes.statusCode === 301) {
+    if ((params.proxyRes.statusCode <= 299 &&
+        params.proxyRes.statusCode >= 200)) {
       await this.saveSuccess(params);
     } else {
-      await this.saveError(params.proxyRes.statusCode, params);
+      const eventType = this.getEventTypeFromPath(params.userReq.path, params.userReq.method);
+      const path = params.userReq.path;
+      const miner = params.miner;
+      const method = params.userReq.method;
+      const responseData = params.proxyResData.toString('utf8');
+      const rawtx = params.userReq.body ? params.userReq.body.rawtx || params.userReq.body.rawTx : undefined;
+      await this.saveError(params.proxyRes.statusCode, {
+        eventType,
+        path,
+        miner,
+        method,
+        rawtx,
+        responseData
+      });
+      this.logger.error('mapi_proxy', { statusCode: params.proxyRes.statusCode, data: params.proxyResData.toString('utf8')});
     }
     return {
       success: true,
@@ -34,34 +52,42 @@ export default class SaveProxyRequestResponse extends UseCase {
       }
     };
   }
-
   private async saveSuccess(params: {
     userReq: any,
     proxyRes: any,
     proxyResData: any,
     miner: string,
   }) {
-    let eventType = this.getEventType(params.userReq);
-    const data = JSON.parse(params.proxyResData.toString('utf8'));
+    let eventType = this.getEventTypeFromPath(params.userReq.path,  params.userReq.method);
+    const proxyResData = params.proxyResData.toString('utf8');
+    const data = JSON.parse(proxyResData);
     this.logger.info('mapi_proxy', { statusCode: params.proxyRes.statusCode, data: data, eventType: eventType});
     let txid;
     let tx;
-    if (eventType === 'proxypushtx'){
-      tx = this.getParsedTx(params.userReq);
-      txid = tx.hash || undefined;
-      const channelMeta = this.getChannnelMeta(params.userReq);
-      await this.saveTxs.run({
-        channel: channelMeta.channel ? channelMeta.channel : null,
-        set: {
-          [txid]: {
-            rawtx: tx.toString(),
-            metadata: channelMeta.metadata,
-            tags: channelMeta.tags
+    if (eventType === MerchantapilogEventTypes.PROXYPUSHTX) {
+      tx = this.getParsedTxFromRawTx(params.userReq);
+      txid = tx.hash;
+      // Only save the transaction from the proxy if the result if a miner explictly says they accepted it.
+      // that can be whether it's in mempool or recently mined.
+      // We only want to save in our database the tx when we know we have some committment.
+      if (StatusTxUtil.isAcceptedPush(data)) {
+        txid = tx.hash || undefined;
+        const channelMeta = ChannelMetaUtil.getChannnelMeta(params.userReq)
+        await this.saveTxs.run({
+          channel: channelMeta.channel ? channelMeta.channel : null,
+          set: {
+            [txid]: {
+              rawtx: tx.toString(),
+              metadata: channelMeta.metadata,
+              tags: channelMeta.tags
+            }
           }
-        }
-     });
-    } else if (eventType === 'proxystatustx') {
-      txid = this.getTxidFromPath(params.userReq);
+        });
+      }
+    } else if (eventType === MerchantapilogEventTypes.PROXYSTATUSTX) {
+      txid = this.getTxidFromPath(params.userReq.path);
+    } else if (eventType === MerchantapilogEventTypes.PROXYFEEQUOTE) {
+      txid = undefined;
     }
 
     if (Config.merchantapi.enableResponseLogging) {
@@ -80,79 +106,49 @@ export default class SaveProxyRequestResponse extends UseCase {
   }
 
   private async saveError(statusCode, params: {
-    userReq: any,
-    proxyRes: any,
-    proxyResData: any,
+    path: string,
+    method: string,
+    eventType: string,
+    rawtx?: string,
+    responseData: string,
     miner: string
   }) {
-    this.logger.error('mapi_proxy', { statusCode: params.proxyRes.statusCode, data: params.proxyResData.toString('utf8')});
     if (Config.merchantapi.enableResponseLogging) {
-      const eventType = this.getEventType(params.userReq);
-      const txid = this.findTxid(params.userReq);
-      await this.merchantapilogService.save(params.miner, eventType, { code: statusCode, data: params.proxyResData.toString('utf8') }, txid);
+      const txid = this.findTxid(params.path, params.method, params.rawtx);
+      await this.merchantapilogService.save(params.miner, params.eventType, { code: statusCode, data: params.responseData }, txid);
     }
   }
 
   /**
    * Get the event type for the request
-   * @param userReq The express request to use to determine the API endpoint request type
    */
-  private getEventType(userReq: Request): string {
-    if (/^(\/mapi)?\/tx$/.test(userReq.path) && /post/i.test(userReq.method)) {
-      return 'proxypushtx';
+  private getEventTypeFromPath(path: string, method: string): MerchantapilogEventTypes {
+    if (/^(\/mapi)?\/tx$/i.test(path) && /post/i.test(method)) {
+      return MerchantapilogEventTypes.PROXYPUSHTX;
     }
-    if (/^(\/mapi)?\/feeQuote$/.test(userReq.path) && /get/i.test(userReq.method)) {
-      return 'proxyfeequote';
+    if (/^(\/mapi)?\/feeQuote$/i.test(path) && /get/i.test(method)) {
+      return MerchantapilogEventTypes.PROXYFEEQUOTE;
     }
     const TXID_REGEX = new RegExp('^(\/mapi)?\/tx\/[0-9a-fA-F]{64}$');
-    if (TXID_REGEX.test(userReq.path) && /get/i.test(userReq.method)) {
-      return 'proxystatustx';
+    if (TXID_REGEX.test(path) && /get/i.test(method)) {
+      return MerchantapilogEventTypes.PROXYSTATUSTX;
     }
     return undefined;
   }
 
   /**
    * Get the txid if it's available
-   * @param userReq The express request to use to find the txid
    */
-  private getTxidFromPath(userReq: Request): string {
+  private getTxidFromPath(path: string): string {
     const TXID_REGEX = new RegExp('^(\/mapi)?\/tx\/([0-9a-fA-F]{64})$');
-    const matches = TXID_REGEX.exec(userReq.path);
+    const matches = TXID_REGEX.exec(path);
     if (matches) {
       return matches[2];
     }
     return undefined;
   }
 
-  private getChannnelMeta(userReq: Request): { channel: string, metadata: any, tags: any } {
-    let channel = undefined;
-    let metadata = undefined;
-    let tags = undefined;
-    if (userReq.headers && userReq.headers.channel) {
-      channel = userReq.headers.channel
-    }
-    if (userReq.headers && userReq.headers.metadata) {
-      try {
-        let tmpMetadata: any = userReq.headers.metadata;
-        metadata = JSON.parse(tmpMetadata);
-      } catch (ex) {
-      }
-    }
-    if (userReq.headers && userReq.headers.tags) {
-      try {
-        let tmpTags: any = userReq.headers.tags;
-        tags = JSON.parse(tmpTags);
-      } catch (ex) {
-      }
-    }
-    return {
-      channel,
-      metadata,
-      tags
-    };
-  }
-
-  private getParsedTx(userReq: Request): string {
+  private getParsedTxFromRawTx(userReq: Request): string {
     if (userReq.body && userReq.body.rawTx || userReq.body.rawtx) {
       let rawtx = userReq.body.rawTx || userReq.body.rawtx;
       try {
@@ -168,31 +164,24 @@ export default class SaveProxyRequestResponse extends UseCase {
    * Get the txid from rawtx if available
    * @param userReq The express request to use to find the txid
    */
-  private getTxidFromRawtx(userReq: Request): string {
-
-    // Decode the body to get the txid
-    if (userReq.body && userReq.body.rawTx || userReq.body.rawtx) {
-      let rawtx = userReq.body.rawTx || userReq.body.rawtx;
-      try {
-        const tx = new bsv.Transaction(rawtx)
-        return tx.hash;
-      } catch (err) {
-        return undefined;
-      }
+  private getTxidFromRawtx(rawtx: string): string {
+    try {
+      const tx = new bsv.Transaction(rawtx)
+      return tx.hash;
+    } catch (err) {
+      return undefined;
     }
-    return undefined;
   }
 
   /**
    * Find the txid in the path or the rawtx body
-   * @param userReq The user request to use to find the txid
    */
-  private findTxid(userReq: Request): string {
-    let txid = this.getTxidFromPath(userReq);
+  private findTxid(path: string, method: string, rawtx?: string): string {
+    let txid = this.getTxidFromPath(path);
     if (txid) {
       return txid;
     }
-    return this.getTxidFromRawtx(userReq);
+    return this.getTxidFromRawtx(rawtx);
   }
 }
 

@@ -15,7 +15,6 @@ export default class TxService {
 
   public async getTx(txid: string, rawtx?: boolean) {
     let tx = await this.txModel.getTx(txid, rawtx);
-
     if (!tx) {
       throw new ResourceNotFoundError();
     }

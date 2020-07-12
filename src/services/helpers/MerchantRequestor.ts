@@ -2,6 +2,7 @@
 import * as Minercraft from 'minercraft';
 import { IMerchantConfig, IMerchantApiEndpointConfig } from '@interfaces/IConfig';
 import * as bsv from 'bsv';
+import { MerchantapilogEventTypes } from '../merchantapilog';
 
 /**
  * A policy interface for how to execute broadcasts against merchantapi endpoints
@@ -55,7 +56,7 @@ export class MerchantRequestorSendPolicySerialBackup extends MerchantRequestorPo
           });
 
           if (this.responseSaver) {
-            await this.responseSaver(this.endpoints[i].name, 'pushtx', response, params.txid);
+            await this.responseSaver(this.endpoints[i].name, MerchantapilogEventTypes.PUSHTX, response, params.txid);
           }
 
           if (response && response.payload && response.payload.returnResult === 'success') {
@@ -67,7 +68,7 @@ export class MerchantRequestorSendPolicySerialBackup extends MerchantRequestorPo
           }
         } catch (err) {
           if (this.responseSaver) {
-            await this.responseSaver(this.endpoints[i].name, 'pushtx', { error: err.toString(), stack: err.stack }, params.txid);
+            await this.responseSaver(this.endpoints[i].name, MerchantapilogEventTypes.PUSHTX, { error: err.toString(), stack: err.stack }, params.txid);
           }
           this.logError('MerchantRequestorSendPolicySerialBackup', { error: err.toString(), stack: err.stack });
           errors.push(err.toString());
@@ -100,7 +101,7 @@ export class MerchantRequestorStatusPolicySerialBackup extends MerchantRequestor
           const response = await miner.tx.status(params.txid, {verbose: true});
 
           if (this.responseSaver) {
-            await this.responseSaver(this.endpoints[i].name, 'statustx', response, params.txid);
+            await this.responseSaver(this.endpoints[i].name, MerchantapilogEventTypes.STATUSTX, response, params.txid);
           }
 
           if (response && response.payload && response.payload.returnResult === 'success') {
@@ -113,7 +114,7 @@ export class MerchantRequestorStatusPolicySerialBackup extends MerchantRequestor
         } catch (err) {
 
           if (this.responseSaver) {
-            await this.responseSaver(this.endpoints[i].name, 'statustx', { error: err.toString(), stack: err.stack }, params.txid);
+            await this.responseSaver(this.endpoints[i].name, MerchantapilogEventTypes.STATUSTX, { error: err.toString(), stack: err.stack }, params.txid);
           }
 
           this.logError('MerchantRequestorStatusPolicySerialBackup',{ error: err.toString(), stack: err.stack } );
@@ -164,7 +165,7 @@ export class MerchantRequestorSendPolicySendAllTakeFirstPrioritySuccess extends 
             }
           } catch (err) {
             if (this.responseSaver) {
-              await this.responseSaver(this.endpoints[i].name, 'statustx', { error: err.toString(), stack: err.stack }, params.txid);
+              await this.responseSaver(this.endpoints[i].name, MerchantapilogEventTypes.STATUSTX, { error: err.toString(), stack: err.stack }, params.txid);
             }
             this.logError('MerchantRequestorSendPolicySerialBackup', { error: err.toString(), stack: err.stack });
             errors.push(err.toString());
@@ -181,7 +182,7 @@ export class MerchantRequestorSendPolicySendAllTakeFirstPrioritySuccess extends 
         this.logInfo('minerResult', {url: this.endpoints[i].url, result: minerBroadcastResult[i]});
         // Save to database if logging enabled
         if (this.responseSaver) {
-          await this.responseSaver(this.endpoints[i].name, 'pushtx', minerBroadcastResult[i], params.txid);
+          await this.responseSaver(this.endpoints[i].name, MerchantapilogEventTypes.PUSHTX, minerBroadcastResult[i], params.txid);
         }
         // Get the authoratative success result
         // Keep the first success always

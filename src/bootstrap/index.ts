@@ -26,6 +26,7 @@ import "../services/merchantapilog/index";
 import "../services/spend/index";
 import "../services/event/index";
 import "../services/updatelog/index";
+import "../services/helpers/MerchantRequestor";
 import "../services/use_cases/tx/GetTx";
 import "../services/use_cases/tx/SaveTxs";
 import "../services/use_cases/tx/SyncTxStatus";
@@ -48,6 +49,7 @@ import "../services/use_cases/events/ConnectChannelClientSSE";
 import "../services/use_cases/spends/GetTxoutsByOutpointArray";
 import EnqInitialTxsForSync from '../services/use_cases/tx/EnqInitialTxsForSync';
 import SaveProxyRequestResponse from '../services/use_cases/proxy/SaveProxyRequestResponse';
+import ProxyAndSaveRequestIfCheckStatus  from '../services/use_cases/proxy/ProxyAndSaveRequestIfCheckStatus';
 
 async function startServer() {
   let app = express();
@@ -62,22 +64,47 @@ async function startServer() {
     const proxyOptions = function(endpoint, mapiPrefix = undefined) {
       return {
         https: true,
+        /**
+         * Called first to resolve the proxy path.
+         *
+         * Here we also intercept if it's a 'pushtx' so we can do a 'statustx' first
+         * if the checkstatus=true query or header is set.
+         *
+         * This is needed because old confirmed transactions which get attempted to broadcast will say
+         * "missing inputs".  Therefore we check whether the transaction was first settled or not to
+         * determine whether to save it to our database.
+         *
+         * After the proxy response returns then we call userResDecorator.
+         *
+         *
+         * @param req Request to analyze to generate the proxy request path
+         */
         proxyReqPathResolver: function(req) {
           return new Promise(function (resolve, reject) {
-            const urlParts = url.parse(endpoint.url);
-            let resolvedPathValue = urlJoin(urlParts.path, req.path);
-            // Add an extra prefix
-            if (mapiPrefix) {
-              resolvedPathValue = urlJoin(urlParts.path, mapiPrefix, req.path);
+            // use checkStatus: true to force tx to be cached if it's already known
+            let proxyAndSaveRequestIfCheckStatus = Container.get(ProxyAndSaveRequestIfCheckStatus);
+            proxyAndSaveRequestIfCheckStatus.run({ req: req, cb: function() {
+              const urlParts = url.parse(endpoint.url);
+              let resolvedPathValue = urlJoin(urlParts.path, req.path);
+              logger.info('mapi_proxy', { endpoint: endpoint, requestPath: resolvedPathValue });
+              // Add an extra prefix in case it's needed
+              if (mapiPrefix) {
+                resolvedPathValue = urlJoin(urlParts.path, mapiPrefix, req.path);
+              }
+              resolve(resolvedPathValue);
             }
-            logger.info('mapi_proxy', { endpoint: endpoint, requestPath: resolvedPathValue});
-            resolve(resolvedPathValue);
+            });
           });
         },
         proxyErrorHandler: function(err, res, next) {
           logger.error('mapi_proxy', { handler: 'proxyErrorHandler', error: err.toString(), stack: err.stack});
           next(err);
         },
+        /**
+         * Called after the proxy returns.
+         *
+         * Analyze the response and then save and log accordingly.
+         */
         userResDecorator: async (proxyRes, proxyResData, userReq, userRes) => {
           let saveProxyRequestResponse = Container.get(SaveProxyRequestResponse);
           await saveProxyRequestResponse.run({
