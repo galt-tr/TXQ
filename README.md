@@ -1338,6 +1338,15 @@ For example, set the following HTTP headers to attach additional information:
 
 `tags`: `["animals", "bitcoin"]`
 
+When pushing a tx (POST /mapi/tx) you might want to check if the transaction was confirmed long ago and then force it to be saved:
+
+`checkstatus`: `true`
+
+If you do not set `checkstatus: true` when attempting to broadcast a really old (but confirmed) transaction, then TXQ will not save it in the
+database because the Merchant API returns `ERROR: Missing inputs`.  This is because of course miners may not keep old transactions (ie: prune)
+and therefore we must have a way to first check whether the transaction is confirmed long ago.
+
+Set `checkstatus` to indicate to TXQ to do a "pre-flight" check with `statustx` to know whether we should save this confirmed transaction or not despite whether the push broadcast returns `ERROR: Missing inputs` or not.
 
 ### Query Primary Miner Merchant API
 
