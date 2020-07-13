@@ -1,5 +1,15 @@
 import { Service, Inject } from 'typedi';
 
+export enum MerchantapilogEventTypes {
+  PUSHTX = 'pushtx',
+  STATUSTX = 'statustx',
+  PROXYPUSHTX = 'proxypushtx',
+  PROXYSTATUSTX = 'proxystatustx',
+  CHECKPUSHTX = 'checkpushtx',
+  PROXYFEEQUOTE = 'proxyfeequote',
+  FEEQUOTE = 'feequote',
+}
+
 @Service('merchantapilogService')
 export default class MerchantapilogService {
   constructor(
