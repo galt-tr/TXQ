@@ -38,6 +38,10 @@ export default class TxoutService {
       txid, index, address, scripthash, script, satoshis
     );
   }
+
+  public async getTxoutsByGroup(groupname: string, script: boolean, offset: number, limit: number, unspent: boolean) {
+    return await this.txoutModel.getTxoutsByGroup(groupname, offset, limit, script, unspent);
+  }
 }
 
 

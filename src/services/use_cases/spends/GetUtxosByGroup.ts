@@ -1,8 +1,8 @@
 import { Service, Inject } from 'typedi';
 import { UseCase } from '../UseCase';
 import { UseCaseOutcome } from '../UseCaseOutcome';
-@Service('getUtxosByScriptHash')
-export default class GetUtxosByScriptHash extends UseCase {
+@Service('getUtxosByGroup')
+export default class GetUtxosByGroup extends UseCase {
 
   constructor(
     @Inject('txoutService') private txoutService,
@@ -10,8 +10,8 @@ export default class GetUtxosByScriptHash extends UseCase {
     super();
   }
 
-  public async run(params: { scripthash: string, script?: boolean, limit: any, offset: any }): Promise<UseCaseOutcome> {
-    let entities = await this.txoutService.getTxoutByScriptHash(params.scripthash, params.offset, params.limit, params.script, true);
+  public async run(params: { groupname: string, script?: boolean,  limit: any, offset: any }): Promise<UseCaseOutcome> {
+    let entities = await this.txoutService.getTxoutsByGroup(params.groupname, params.offset, params.limit, params.script, true);
     let utxoFormatted = [];
     utxoFormatted = entities.map((e) => {
       return {

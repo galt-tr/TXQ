@@ -79,6 +79,64 @@ class TxoutModel {
     return result.rows;
   }
 
+  public async getTxoutsByGroup(groupname: string, offset: number, limit: number, script?: boolean, unspent?: boolean): Promise<any> {
+    let result: any;
+    if (script) {
+      if (unspent) {
+        result = await this.db.query(sql`
+        SELECT txout.txid, index, address, scripthash, satoshis, spend_txid, spend_index, script FROM txout, txoutgroup
+        WHERE
+        txoutgroup.groupname =${groupname} AND
+        (
+          txoutgroup.scriptid = txout.address OR
+          txoutgroup.scriptid = txout.scripthash
+        ) AND
+        spend_txid IS NULL
+        OFFSET ${offset}
+        LIMIT ${limit}`);
+      } else {
+        result = await this.db.query(sql`
+        SELECT txout.txid, index, address, scripthash, satoshis, spend_txid, spend_index, script FROM txout, txoutgroup
+        WHERE
+        txoutgroup.groupname =${groupname} AND
+        (
+          txoutgroup.scriptid = txout.address OR
+          txoutgroup.scriptid = txout.scripthash
+        )
+        OFFSET ${offset}
+        LIMIT ${limit}`);
+      }
+    } else {
+      if (unspent) {
+        result = await this.db.query(sql`
+        SELECT txout.txid, index, address, scripthash, satoshis, spend_txid, spend_index
+        FROM txout, txoutgroup
+        WHERE
+        txoutgroup.groupname =${groupname} AND
+        (
+          txoutgroup.scriptid = txout.address OR
+          txoutgroup.scriptid = txout.scripthash
+        ) AND
+        spend_txid IS NULL
+        OFFSET ${offset}
+        LIMIT ${limit}`);
+      } else {
+        result = await this.db.query(sql`
+        SELECT txout.txid, index, address, scripthash, satoshis, spend_txid, spend_index
+      FROM txout, txoutgroup
+        WHERE
+        txoutgroup.groupname =${groupname} AND
+        (
+          txoutgroup.scriptid = txout.address OR
+          txoutgroup.scriptid = txout.scripthash
+        )
+        OFFSET ${offset}
+        LIMIT ${limit}`);
+      }
+    }
+    return result.rows;
+  }
+
   public async getTxout(txid: string, index: number, script?: boolean): Promise<string> {
     if (script) {
       let result: any = await this.db.query(sql`

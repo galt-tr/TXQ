@@ -10,31 +10,10 @@ import ResourceNotFoundError from '../../../services/error/ResourceNotFoundError
 import { sendResponseWrapper } from '../../../util/sendResponseWrapper';
 import { sendErrorWrapper } from '../../../util/sendErrorWrapper';
 import GetTxoutsByOutpointArray from '../../../services/use_cases/spends/GetTxoutsByOutpointArray';
+import GetTxoutsByGroup from '../../../services/use_cases/spends/GetTxoutsByGroup';
+import GetUtxosByGroup from '../../../services/use_cases/spends/GetUtxosByGroup';
 
 export default [
-  {
-    path: `${path}/txout/txid/:txOutpoints`,
-    method: 'get',
-    handler: [
-      async (Req: Request, res: Response, next: NextFunction) => {
-        try {
-          let getTxout = Container.get(GetTxoutsByOutpointArray);
-          let data = await getTxout.run({
-            txOutpoints: Req.params.txOutpoints,
-            script: Req.query.script === '0' ? false : true,
-          });
-          sendResponseWrapper(Req, res, 200, data.result);
-
-        } catch (error) {
-          if (error instanceof ResourceNotFoundError) {
-            sendErrorWrapper(res, 404, error.toString());
-            return;
-          }
-          next(error);
-        }
-      },
-    ],
-  },
   {
     path: `${path}/txout/txid/:txid/:index`,
     method: 'get',
@@ -48,6 +27,29 @@ export default [
             script: Req.query.script === '0' ? false : true,
           });
 
+          sendResponseWrapper(Req, res, 200, data.result);
+
+        } catch (error) {
+          if (error instanceof ResourceNotFoundError) {
+            sendErrorWrapper(res, 404, error.toString());
+            return;
+          }
+          next(error);
+        }
+      },
+    ],
+  },
+  {
+    path: `${path}/txout/txid/:txOutpoints`,
+    method: 'get',
+    handler: [
+      async (Req: Request, res: Response, next: NextFunction) => {
+        try {
+          let getTxout = Container.get(GetTxoutsByOutpointArray);
+          let data = await getTxout.run({
+            txOutpoints: Req.params.txOutpoints,
+            script: Req.query.script === '0' ? false : true,
+          });
           sendResponseWrapper(Req, res, 200, data.result);
 
         } catch (error) {
@@ -146,5 +148,66 @@ export default [
         }
       },
     ],
-  }
+  },
+  {
+    path: `${path}/txout/groupby/:groupname`,
+    method: 'get',
+    handler: [
+      async (Req: Request, res: Response, next: NextFunction) => {
+        try {
+          let uc = Container.get(GetTxoutsByGroup);
+          let data = await uc.run({
+            groupname: Req.params.groupname,
+            limit: Req.query.limit ? Req.query.limit : 1000,
+            script: Req.query.script === '0' ? false : true,
+            offset: Req.query.offset ? Req.query.offset : 0
+          });
+          sendResponseWrapper(Req, res, 200, data.result);
+
+        } catch (error) {
+          next(error);
+        }
+      },
+    ],
+  },
+  {
+    path: `${path}/txout/group/:groupname/utxo`,
+    method: 'get',
+    handler: [
+      async (Req: Request, res: Response, next: NextFunction) => {
+        try {
+          let uc = Container.get(GetUtxosByGroup);
+          let data = await uc.run({
+            groupname: Req.params.groupname,
+            limit: Req.query.limit ? Req.query.limit : 1000,
+            script: Req.query.script === '0' ? false : true,
+            offset: Req.query.offset ? Req.query.offset : 0
+          });
+          sendResponseWrapper(Req, res, 200, data.result);
+        } catch (error) {
+          next(error);
+        }
+      },
+    ],
+  },/*
+  {
+    path: `${path}/txout/group/:groupname/utxo/balance`,
+    method: 'get',
+    handler: [
+      async (Req: Request, res: Response, next: NextFunction) => {
+        try {
+          let uc = Container.get(GetUtxosBalanceByGroupsArray);
+          let data = await uc.run({
+            address: Req.params.address,
+            limit: Req.query.limit ? Req.query.limit : 1000,
+            script: Req.query.script === '0' ? false : true,
+            offset: Req.query.offset ? Req.query.offset : 0
+          });
+          sendResponseWrapper(Req, res, 200, data.result);
+        } catch (error) {
+          next(error);
+        }
+      },
+    ],
+  },*/
 ];

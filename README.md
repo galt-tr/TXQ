@@ -1366,7 +1366,6 @@ All events are logged to the database (enabled by default) under `proxypushtx`, 
 
 `GET /mapi/feeQuote`
 
-
 ### Query Specific Miner Merchant API
 
 Select a specific miner to send the Merchant API request to. The identifer `<miner-name>` must match the name in the configuration file.
