@@ -50,6 +50,7 @@ import "../services/use_cases/spends/GetTxoutsByOutpointArray";
 import EnqInitialTxsForSync from '../services/use_cases/tx/EnqInitialTxsForSync';
 import SaveProxyRequestResponse from '../services/use_cases/proxy/SaveProxyRequestResponse';
 import ProxyAndSaveRequestIfCheckStatus  from '../services/use_cases/proxy/ProxyAndSaveRequestIfCheckStatus';
+import { MerchantEndpointNetworkSelector } from '../services/helpers/MerchantEndpointNetworkSelector';
 
 async function startServer() {
   let app = express();
@@ -118,10 +119,11 @@ async function startServer() {
       };
     };
     // Create a default /mapi route for the first merchantapi (for now)
-    router.use('/mapi', proxy(Config.merchantapi.endpoints[0].url, proxyOptions(Config.merchantapi.endpoints[0], '/mapi')));
+    const selectedEndpoints = MerchantEndpointNetworkSelector.selectEndpoints(Config.merchantapi.endpoints, process.env.NETWORK);
+    router.use('/mapi', proxy(selectedEndpoints[0].url, proxyOptions(selectedEndpoints[0], '/mapi')));
     // Create /merchantapi/mapi routes by miner index and miner name
     let i = 0;
-    for (const endpoint of Config.merchantapi.endpoints) {
+    for (const endpoint of selectedEndpoints) {
       router.use('/merchantapi/' + endpoint.name, proxy(endpoint.url, proxyOptions(endpoint)));
       router.use('/merchantapi/' + i, proxy(endpoint.url, proxyOptions(endpoint)));
       i++;

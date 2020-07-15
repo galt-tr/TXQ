@@ -49,33 +49,37 @@ const config: IConfig = {
     statusPolicy: 'SERIAL_BACKUP',            // 'SERIAL_BACKUP'
     enableResponseLogging: true,              // Whether to log every request and response from merchantapi's to the database
     enableProxy: true,                        // Exposes /merchantapi/<miner name>/mapi/tx endpoints...
-    endpoints: [
-      {
-        name: 'merchantapi.taal.com',
-        url: 'https://merchantapi.taal.com',
-        headers: {
+    endpoints: {
+      livenet: [
+        {
+          name: 'merchantapi.taal.com',
+          url: 'https://merchantapi.taal.com',
+          headers: {
+          }
+        },
+        {
+          name: 'mempool.io',
+          url: 'https://www.ddpurse.com/openapi',
+          headers: {
+            token: "561b756d12572020ea9a104c3441b71790acbbce95a6ddbf7e0630971af9424b"
+          }
+        },
+        {
+          name: 'merchantapi.matterpool.io',
+          url: 'https://merchantapi.matterpool.io',
+          headers: {
+          }
         }
-      },
-      {
-        name: 'mempool.io',
-        url: 'https://www.ddpurse.com/openapi',
-        headers: {
-          token: "561b756d12572020ea9a104c3441b71790acbbce95a6ddbf7e0630971af9424b"
+      ],
+      testnet: [
+        {
+          name: 'merchantapi-testnet.mattercloud.io',
+          url: 'https://merchantapi-testnet.mattercloud.io',
+          headers: {
+          }
         }
-      },
-      {
-        name: 'merchantapi.matterpool.io',
-        url: 'https://merchantapi.matterpool.io',
-        headers: {
-        }
-      },
-      /*{
-        name: 'merchantapi-testnet.mattercloud.io',
-        url: 'https://merchantapi-testnet.mattercloud.io',
-        headers: {
-        }
-      },*/
-    ]
+      ]
+    }
   },
   db: {
     host: 'localhost',

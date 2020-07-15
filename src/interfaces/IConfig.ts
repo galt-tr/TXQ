@@ -37,12 +37,17 @@ export interface IMerchantApiEndpointConfig {
   headers?: any
 }
 
+export interface IMerchantApiEndpointGroupConfig {
+  livenet: Array<IMerchantApiEndpointConfig>,
+  testnet: Array<IMerchantApiEndpointConfig>
+}
+
 export interface IMerchantConfig {
   sendPolicy: undefined | 'SERIAL_BACKUP' | 'ALL_FIRST_PRIORITY_SUCCESS';
   statusPolicy: undefined | 'SERIAL_BACKUP';
   enableResponseLogging: boolean,
   enableProxy: boolean,
-  endpoints: Array<IMerchantApiEndpointConfig>;
+  endpoints: IMerchantApiEndpointGroupConfig
 }
 
 export interface ISyncQueue {

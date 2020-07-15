@@ -6,6 +6,10 @@ export default class TxinService {
   public async saveTxins(tx: bsv.Transaction) {
     let i = 0;
     for (const input of tx.inputs) {
+      if (input.isNull()) {
+        //Skip coinbase
+        continue;
+      }
       const prevTxId = input.prevTxId.toString('hex');
       const outputIndex = input.outputIndex;
       const unlockScript = input.script.toBuffer().toString('hex');

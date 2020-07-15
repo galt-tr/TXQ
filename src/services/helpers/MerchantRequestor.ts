@@ -1,14 +1,15 @@
 
 import * as Minercraft from 'minercraft';
-import { IMerchantConfig, IMerchantApiEndpointConfig } from '@interfaces/IConfig';
+import { IMerchantConfig, IMerchantApiEndpointConfig, IMerchantApiEndpointGroupConfig } from '@interfaces/IConfig';
 import * as bsv from 'bsv';
 import { MerchantapilogEventTypes } from '../merchantapilog';
+import { MerchantEndpointNetworkSelector } from './MerchantEndpointNetworkSelector';
 
 /**
  * A policy interface for how to execute broadcasts against merchantapi endpoints
  */
 export class MerchantRequestorPolicy {
-  constructor(protected logger: any, protected responseSaver?: Function) {
+  constructor(private merchantConfig: IMerchantApiEndpointGroupConfig, protected logger: any, protected responseSaver?: Function) {
   }
 
   execute(params: any): Promise<any> {
@@ -19,6 +20,11 @@ export class MerchantRequestorPolicy {
     if (this.logger) {
       this.logger.error(name, data);
     }
+  }
+
+  get endpoints(): IMerchantApiEndpointConfig[] {
+    const e =  MerchantEndpointNetworkSelector.selectEndpoints(this.merchantConfig, process.env.NETWORK);
+    return e;
   }
 
   logInfo(name, data) {
@@ -33,8 +39,8 @@ export class MerchantRequestorPolicy {
  */
 export class MerchantRequestorSendPolicySerialBackup extends MerchantRequestorPolicy {
 
-  constructor(private endpoints: IMerchantApiEndpointConfig[], logger: any, responseSaver?: Function) {
-    super(logger, responseSaver);
+  constructor(private endpointConfigGroup: IMerchantApiEndpointGroupConfig, logger: any, responseSaver?: Function) {
+    super(endpointConfigGroup, logger, responseSaver);
   }
   /**
    * Execute this policy for broadcasting
@@ -45,6 +51,7 @@ export class MerchantRequestorSendPolicySerialBackup extends MerchantRequestorPo
     return new Promise(async (resolve, reject) => {
       for (let i = 0; i < this.endpoints.length; i++) {
         try {
+
           const miner = new Minercraft({
             url: this.endpoints[i].url,
             headers: this.endpoints[i].headers,
@@ -82,8 +89,8 @@ export class MerchantRequestorSendPolicySerialBackup extends MerchantRequestorPo
  * Does a sequential loop over all merchantapi's until 1 is successful
  */
 export class MerchantRequestorStatusPolicySerialBackup extends MerchantRequestorPolicy {
-  constructor(private endpoints: IMerchantApiEndpointConfig[], logger: any, responseSaver?: Function) {
-    super(logger, responseSaver);
+  constructor(private endpointConfigGroup: IMerchantApiEndpointGroupConfig, logger: any, responseSaver?: Function) {
+    super(endpointConfigGroup, logger, responseSaver);
   }
   /**
    * Execute this policy for broadcasting
@@ -132,8 +139,8 @@ export class MerchantRequestorStatusPolicySerialBackup extends MerchantRequestor
  * From the client it will appear as this behaves like a single merchant-api (albet might return different miner id info)
  */
 export class MerchantRequestorSendPolicySendAllTakeFirstPrioritySuccess extends MerchantRequestorPolicy {
-  constructor(private endpoints: IMerchantApiEndpointConfig[], logger: any, responseSaver?: Function) {
-    super(logger, responseSaver);
+  constructor(private endpointConfigGroup: IMerchantApiEndpointGroupConfig, logger: any, responseSaver?: Function) {
+    super(endpointConfigGroup, logger, responseSaver);
   }
   /**
    * Execute this policy for broadcasting
@@ -212,6 +219,7 @@ export class MerchantRequestorSendPolicySendAllTakeFirstPrioritySuccess extends 
 }
 
 export class MerchantRequestorPolicyFactory {
+
   /**
    *  Get the policy for broadcasting
    */

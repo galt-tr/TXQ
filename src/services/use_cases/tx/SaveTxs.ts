@@ -96,6 +96,10 @@ export default class SaveTxs extends UseCase {
         if (parsedTx) {
           let i = 0;
           for (const input of parsedTx.inputs) {
+            if (input.isNull()) {
+              //Skip coinbase
+              continue;
+            }
             const prevTxId = input.prevTxId.toString('hex');
             const outputIndex = input.outputIndex;
             await this.spendService.updateSpendIndex(

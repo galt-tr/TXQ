@@ -33,7 +33,6 @@ export default class SyncTxStatus extends UseCase {
     )
   }
 
-
   /**
   * Whether this is a valid synced statuts
   * @param status merchant api tx status
