@@ -605,7 +605,6 @@ Retrieve spent status of a txoutput (txid + index)
 }
 ```
 
-
 ### Get Address Outputs
 
 `GET /api/v1/txout/address/:address?pretty=1&offset=0&limit=1000`
@@ -620,7 +619,6 @@ Params:
 - pretty: whether to pretty print
 
 Retrieve outputs involving address. Note: receives are tracked only for now.
-
 
 ```javascript
 {
@@ -671,6 +669,28 @@ Retrieve outputs involving address. Note: receives are tracked only for now.
       "script": "76a914131c6436d67d360e0d56f5fd78f8eb8719e9b2e288ac",
       "address": "1FmSNBWW2m6d6FDUWxDjaJo9jhNAs9Pekr",
       "scripthash": "ee7beac2fcc315b37f190530d743769f255b1d413edd6e51bbc003022753f909"
+    }
+  ]
+}
+```
+
+### Get Balance By Address
+
+`GET /api/v1/txout/address/:addresses/balance?pretty=1`
+
+Params:
+- pretty: whether to pretty print
+
+Retrieve the balance for addresses
+
+```javascript
+{
+  "status": 200,
+  "errors": [],
+  "result": [
+    {
+      "confirmed": 432454,
+      "unconfirmed": 0
     }
   ]
 }
@@ -750,6 +770,188 @@ Retrieve outputs involving scripthash. Note: receives are tracked only for now.
   ]
 }
 ```
+
+### Get Balance By Scripthash
+
+`GET /api/v1/txout/scripthash/:scripthashes/balance?pretty=1`
+
+Params:
+- pretty: whether to pretty print
+
+Retrieve the balance for scripthashes
+
+```javascript
+{
+  "status": 200,
+  "errors": [],
+  "result": [
+    {
+      "confirmed": 432454,
+      "unconfirmed": 0
+    }
+  ]
+}
+```
+
+
+
+### Add Address or Scripthash to Output Group
+
+`POST /api/v1/txoutgroup/:groupname`
+
+POST Request Body:
+
+```javascript
+{
+ "scriptids": [
+   "0012",
+   "address1",
+   "scripthash1"
+ ]
+}
+```
+Add the output script pattern tagged into the group.  Can be an address or scripthash. This allows you to group outputs by xpub, userid, or any category.
+
+Simply use the xpub as the 'groupname' and then you have a full xpub wallet index and utxos.
+
+### Get Output Group
+
+`GET /api/v1/txoutgroup/:groupname`
+
+Get all the subscribed addresses and scripthashes for this groupname.
+
+Response Body
+
+```javascript
+{
+    "status": 200,
+    "errors": [],
+    "result": [
+        {
+            "groupname": "mykey",
+            "scriptid": "131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW",
+            "created_at": 1594930920
+        },
+        {
+            "groupname": "mykey",
+            "scriptid": "13jbh6Ps6p4GEfNVbZpp6AwqWFrkWQmaWN",
+            "created_at": 1594921596
+        }
+    ]
+}
+
+```
+Get all scriptids subscribed to the groupname. Scriptid can be an address or a scripthash to match outputs.
+
+### Delete Address or Scripthash from Output Group
+
+`DELETE /api/v1/txoutgroup/:groupname`
+
+DELETE Request Body:
+
+```javascript
+{
+ "scriptids": [
+   "0012",
+   "address1",
+   "scripthash1"
+ ]
+}
+```
+Delete the addreses and scripthashes from the group
+
+### Get Outputs By Group
+
+*NOTE:* Requires creating a group using the Output Group API calls.
+
+`GET /api/v1/txout/groupby/:groupname?pretty=1&offset=0&limit=1000&script=1`
+
+Params:
+- offset: Skip this many outputs
+- limit: results returned
+- script: Set to '0' to exclude returning the script
+- pretty: whether to pretty print
+
+Retrieve outputs that share a address or scripthash with the txoutgroup.scriptid. Note: receives are tracked only for now.
+
+```javascript
+{
+  "status": 200,
+  "errors": [],
+  "result": [
+    {
+      "txid": "dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293",
+      "index": 0,
+      "script": "76a914a1f93cb1d124a82f8f86b06ef97a4fd6d77c04e288ac",
+      "address": "1FmSNBWW2m6d6FDUWxDjaJo9jhNAs9Pekr",
+      "scripthash": "ee7beac2fcc315b37f190530d743769f255b1d413edd6e51bbc003022753f909",
+      "satoshis": 31994680111,
+      "is_receive": true,
+      "spend_txid": null,
+      "spend_index": null
+    }
+  ]
+}
+```
+
+### Get Unspent Outputs By Group (UTXO)
+
+*NOTE:* Requires creating a group using the Output Group API calls.
+
+`GET /api/v1/txout/groupby/:groupname/utxo?pretty=1&offset=0&limit=1000&script=1`
+
+Params:
+- offset: Skip this many outputs
+- limit: results returned
+- script: Set to '0' to exclude returning the script
+- pretty: whether to pretty print
+
+Retrieve unspent outputs that share a address or scripthash with the txoutgroup.scriptid. Note: receives are tracked only for now.
+
+```javascript
+{
+  "status": 200,
+  "errors": [],
+  "result": [
+    {
+      "txid": "dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293",
+      "index": 0,
+      "script": "76a914a1f93cb1d124a82f8f86b06ef97a4fd6d77c04e288ac",
+      "address": "1FmSNBWW2m6d6FDUWxDjaJo9jhNAs9Pekr",
+      "scripthash": "ee7beac2fcc315b37f190530d743769f255b1d413edd6e51bbc003022753f909",
+      "satoshis": 31994680111,
+      "is_receive": true,
+      "spend_txid": null,
+      "spend_index": null
+    }
+  ]
+}
+```
+
+### Get Balance By Group
+
+*NOTE:* Requires creating a group using the Output Group API calls.
+
+`GET /api/v1/txout/groupby/:groupname/balance?pretty=1`
+
+Params:
+- pretty: whether to pretty print
+
+Retrieve the balance for all the addresses and scripthashes tagged by groupname.
+
+```javascript
+{
+  "status": 200,
+  "errors": [],
+  "result": [
+    {
+      "confirmed": 432454,
+      "unconfirmed": 0
+    }
+  ]
+}
+```
+
 
 ### Get Queue Stats
 
