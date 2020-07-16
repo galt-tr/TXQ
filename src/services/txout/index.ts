@@ -21,6 +21,10 @@ export default class TxoutService {
     return entity;
   }
 
+  public async getTxoutsByGroup(groupname: string, script: boolean, offset: number, limit: number, unspent: boolean) {
+    return await this.txoutModel.getTxoutsByGroup(groupname, offset, limit, script, unspent);
+  }
+
   public async getTxout(txid: string, index: number, script?: boolean) {
     let entity = await this.txoutModel.getTxout(txid, index, script);
     if (!entity) {
@@ -39,9 +43,6 @@ export default class TxoutService {
     );
   }
 
-  public async getTxoutsByGroup(groupname: string, script: boolean, offset: number, limit: number, unspent: boolean) {
-    return await this.txoutModel.getTxoutsByGroup(groupname, offset, limit, script, unspent);
-  }
 }
 
 

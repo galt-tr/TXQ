@@ -674,7 +674,7 @@ Retrieve outputs involving address. Note: receives are tracked only for now.
 }
 ```
 
-### Get Balance By Address
+### Get Balance By Address (Coming soon)
 
 `GET /api/v1/txout/address/:addresses/balance?pretty=1`
 
@@ -771,7 +771,7 @@ Retrieve outputs involving scripthash. Note: receives are tracked only for now.
 }
 ```
 
-### Get Balance By Scripthash
+### Get Balance By Scripthash  (Coming soon)
 
 `GET /api/v1/txout/scripthash/:scripthashes/balance?pretty=1`
 
@@ -928,7 +928,7 @@ Retrieve unspent outputs that share a address or scripthash with the txoutgroup.
 }
 ```
 
-### Get Balance By Group
+### Get Balance By Group (Coming soon)
 
 *NOTE:* Requires creating a group using the Output Group API calls.
 

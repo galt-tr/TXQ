@@ -26,9 +26,10 @@ export default class SaveProxyRequestResponse extends UseCase {
     proxyResData: any,
     miner: string,
   }): Promise<UseCaseOutcome> {
+    let success = false;
     if ((params.proxyRes.statusCode <= 299 &&
         params.proxyRes.statusCode >= 200)) {
-      await this.saveSuccess(params);
+        success = await this.saveSuccess(params);
     } else {
       const eventType = this.getEventTypeFromPath(params.userReq.path, params.userReq.method);
       const path = params.userReq.path;
@@ -47,7 +48,7 @@ export default class SaveProxyRequestResponse extends UseCase {
       this.logger.error('mapi_proxy', { statusCode: params.proxyRes.statusCode, data: params.proxyResData.toString('utf8')});
     }
     return {
-      success: true,
+      success,
       result: {
       }
     };
