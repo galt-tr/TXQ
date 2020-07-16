@@ -8,7 +8,7 @@ let config = require(__dirname + '/../../../../src/cfg/index.ts').default,
 describe('tx#index', () => {
 
   test('txid 404', done => {
-    done();
+   done();
     /*
     api
       .get('/tx/394a5afbb3f07a0399a34a43b73bb04aba174f931d13d341600383383bb51971')
