@@ -14,6 +14,7 @@ export default class SaveTxs extends UseCase {
   constructor(
     @Inject('eventService') private eventService,
     @Inject('updatelogService') private updatelogService,
+    @Inject('txoutgroupService') private txoutgroupService,
     @Inject('queueService') private queueService,
     @Inject('txsyncService') private txsyncService,
     @Inject('txService') private txService,
@@ -93,6 +94,8 @@ export default class SaveTxs extends UseCase {
           parsedTx ? txDataExtractor(parsedTx) : {}
         );
 
+        let notifyWithEntities = [];
+
         if (parsedTx) {
           let i = 0;
           for (const input of parsedTx.inputs) {
@@ -135,8 +138,11 @@ export default class SaveTxs extends UseCase {
               satoshis: parsedTx.outputs[i].satoshis
             }, eventType: 'txout'};
 
-            this.eventService.pushChannelEvent('address-' + address, wrappedEntity, -1);
-            this.eventService.pushChannelEvent('scripthash-' + scripthash, wrappedEntity, -1);
+            notifyWithEntities.push({
+              address,
+              scripthash,
+              wrappedEntity
+            });
 
             await this.spendService.backfillSpendIndexIfNeeded(
               parsedTx.hash, i
@@ -154,12 +160,27 @@ export default class SaveTxs extends UseCase {
         }
 
         savedTxs.push(expectedTxid);
-
         let useCaseOutcome = await this.getTx.run({ txid: expectedTxid, channel: cleanedChannel, rawtx: true});
+        for (const item of notifyWithEntities) {
+          console.log('no  notify', item);
+          const scriptIds = [];
+          if (item.address) {
+            scriptIds.push(item.address);
+            this.eventService.pushChannelEvent('address-' + item.address, item.wrappedEntity, -1);
+          }
+          if (item.scripthash) {
+            scriptIds.push(item.scripthash);
+            this.eventService.pushChannelEvent('scripthash-' + item.scripthash, item.wrappedEntity, -1);
+          }
+          // Now get all the groups to be notified
+          const txoutgroups = await this.txoutgroupService.getTxoutgroupNamesByScriptIds(scriptIds);
+          for (const txoutgroup of txoutgroups) {
+            this.eventService.pushChannelEvent('groupby-' + txoutgroup.groupname, item.wrappedEntity, -1);
+          }
+        }
+
         // Save to updatelogging if enabled
-
         if (!didExistBefore) {
-
           const wrappedEntity = { entity: useCaseOutcome.result, eventType: 'newtx'};
           this.eventService.pushChannelEvent(cleanedChannel, wrappedEntity, useCaseOutcome.result.id);
 

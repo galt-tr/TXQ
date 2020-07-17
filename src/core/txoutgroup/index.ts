@@ -13,6 +13,22 @@ class TxoutgroupModel {
     return result.rows;
   }
 
+  public async getTxoutgroupNamesByScriptId(scriptId: string): Promise<any> {
+    const s = sql`
+    SELECT * FROM txoutgroup
+    WHERE scriptid = ${scriptId}`;
+    const result = await this.db.query(s);
+    return result.rows;
+  }
+
+  public async getTxoutgroupNamesByScriptIds(scriptIds: string[]): Promise<any> {
+    const str = sql`
+    SELECT * FROM txoutgroup
+    WHERE scriptid = ANY(${sql.array(scriptIds, 'varchar')})`;
+    const result = await this.db.query(str);
+    return result.rows;
+  }
+
   public saveTxoutgroups(groupname: string, scriptids: string[]): Promise<any> {
     let expandedInserts = scriptids.map((item) => {
       return [ groupname, item, Math.round((new Date()).getTime() / 1000) ];

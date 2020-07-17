@@ -101,5 +101,19 @@ export default [
         }
       },
     ],
+  },
+  {
+    path: `${ssePath}/txout/groupby/:groupname`,
+    method: 'get',
+    handler: [
+      async (Req: Request, res: Response, next: NextFunction) => {
+        try {
+          let connectChannelClientSSE = Container.get(ConnectChannelClientSSE);
+          connectChannelClientSSE.run({ channel: 'groupby-' + Req.params.groupname, req: Req, res: res});
+        } catch (error) {
+          next(error);
+        }
+      },
+    ],
   }
 ];

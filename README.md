@@ -62,8 +62,6 @@
 - [Database Schema and Design](#database-schema-and-design)
 - [Additional Resources](#additional-resources)
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
 
 ## Motivation
 
@@ -260,11 +258,11 @@ Easily connect TXQ with your other services via SSE sockets for subscribing to n
 
 ## REST API Documentation
 
-Try it at: `https://txq.matterpool.io`
+Try it at: `https://public.txq-app.com`
 
 Example:
 
-<a href='https://txq.matterpool.io/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1'>https://txq.matterpool.io/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1</a>
+<a href='https://public.txq-app.com/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1'>https://public.txq-app.com/api/v1/tx/dc7bed6c302c08b7bafd94bfb1086883a134861fe9f212fc8052fcaadcde2293?pretty=1</a>
 
 
 ### Submit Transaction
@@ -1063,14 +1061,14 @@ Use <a href='https://developer.mozilla.org/en-US/docs/Web/API/EventSource' targe
 The `EventSource` automatically handles sending `Last-EventId` as a header when the stream reconnects so you will always get any missed updates.
 
 Example streams:
-- <a href='https://txq.matterpool.io/sse/channel/inserts' target="_blank">Tx Inserts</a>
-- <a href='https://txq.matterpool.io/sse/channel/inserts/channelNameHere' target="_blank">Tx Inserts (with Channel</a>
-- <a href='https://txq.matterpool.io/sse/channel/updates' target="_blank">Tx Updates</a>
-- <a href='https://txq.matterpool.io/sse/channel/updates/channelNameHere' target="_blank">Tx Updates (with Channel)</a>
-- <a href='https://txq.matterpool.io/sse/merchantapilogs' target="_blank">Merchant API Log</a>
-- <a href='https://txq.matterpool.io/sse/txout/address/131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW' target="_blank">Address Updates</a>
-- <a href='https://txq.matterpool.io/sse/txout/scripthash/ee7beac2fcc315b37f190530d743769f255b1d413edd6e51bbc003022753f909' target="_blank">Scripthash Updates</a>
-
+- <a href='https://public.txq-app.com/sse/channel/inserts' target="_blank">Tx Inserts</a>
+- <a href='https://public.txq-app.com/sse/channel/inserts/channelNameHere' target="_blank">Tx Inserts (with Channel</a>
+- <a href='https://public.txq-app.com/sse/channel/updates' target="_blank">Tx Updates</a>
+- <a href='https://public.txq-app.com/sse/channel/updates/channelNameHere' target="_blank">Tx Updates (with Channel)</a>
+- <a href='https://public.txq-app.com/sse/merchantapilogs' target="_blank">Merchant API Log</a>
+- <a href='https://public.txq-app.com/sse/txout/address/131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW' target="_blank">Address Updates</a>
+- <a href='https://public.txq-app.com/sse/txout/scripthash/ee7beac2fcc315b37f190530d743769f255b1d413edd6e51bbc003022753f909' target="_blank">Scripthash Updates</a>
+- <a href='https://public.txq-app.com/sse/txout/groupby/myGroupName' target="_blank">Output Group Updates</a>
 
 ### New Transactions Stream (Default channel)
 
@@ -1078,7 +1076,7 @@ Stream all newly created inserts for the default queue channel
 
 `GET /sse/channel/inserts` (SSE)
 
-Example: <a href='https://txq.matterpool.io/sse/channel/inserts' target="_blank">Inserts</a>
+Example: <a href='https://public.txq-app.com/sse/channel/inserts' target="_blank">Inserts</a>
 
 ```javascript
 id: -1
@@ -1157,7 +1155,7 @@ Stream all newly created inserts for the provided custom queue channel
 
 `GET /sse/channel/inserts/:channelName` (SSE)
 
-Example: <a href='https://txq.matterpool.io/sse/channel/inserts/someChannelName' target="_blank">Inserts (with Channel)</a>
+Example: <a href='https://public.txq-app.com/sse/channel/inserts/someChannelName' target="_blank">Inserts (with Channel)</a>
 
 ```javascript
 id: -1
@@ -1237,7 +1235,7 @@ Stream all newly created inserts and updated transactions for the default queue 
 
 `GET /sse/channel/updates` (SSE)
 
-Example: <a href='https://txq.matterpool.io/sse/channel/updates' target="_blank">Updates</a>
+Example: <a href='https://public.txq-app.com/sse/channel/updates' target="_blank">Updates</a>
 
 ```javascript
 id: -1
@@ -1316,7 +1314,7 @@ Stream all newly created inserts and updated transactions for the provided custo
 
 `GET /sse/channel/updates/:channelName` (SSE)
 
-Example: <a href='https://txq.matterpool.io/sse/channel/updates/someChannelName' target="_blank">Updates (with Channel)</a>
+Example: <a href='https://public.txq-app.com/sse/channel/updates/someChannelName' target="_blank">Updates (with Channel)</a>
 
 Event Types: `newtx`, `updatetx`
 
@@ -1398,7 +1396,7 @@ Stream all merchant API sends and status updates. This allows you to track confi
 
 `GET /sse/merchantapilogs` (SSE)
 
-Example: <a href='https://txq.matterpool.io/sse/merchantapilogs' target="_blank">Merchant API Log Streaming</a>
+Example: <a href='https://public.txq-app.com/sse/merchantapilogs' target="_blank">Merchant API Log Streaming</a>
 
 ```javascript
 id: -1
@@ -1461,7 +1459,7 @@ Stream all newly created outputs by address
 
 `GET /sse/txout/address/:address` (SSE)
 
-Example: <a href='https://txq.matterpool.io/sse/txout/address/131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW' target="_blank">Address Stream</a>
+Example: <a href='https://public.txq-app.com/sse/txout/address/131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW' target="_blank">Address Stream</a>
 
 ```javascript
 
@@ -1489,7 +1487,7 @@ Stream all newly created outputs by scripthash
 
 `GET /sse/txout/scripthash/:scripthash` (SSE)
 
-Example: <a href='https://txq.matterpool.io/sse/txout/scripthash/525d063bd0c861fddc4d4881cb495038652bf432c9e2586cc37d49e98a3cc60e' target="_blank">Scripthash stream</a>
+Example: <a href='https://public.txq-app.com/sse/txout/scripthash/525d063bd0c861fddc4d4881cb495038652bf432c9e2586cc37d49e98a3cc60e' target="_blank">Scripthash stream</a>
 
 
 ```javascript
@@ -1511,6 +1509,37 @@ data: {
 }
 
 ```
+
+
+### Output Group Updates Stream
+
+Stream all newly created outputs by whether the scriphash or address (of each output of the tx) matches any Output Group ('Txoutgroup')
+
+`GET /sse/txout/groupby/:groupname` (SSE)
+
+Example: <a href='https://public.txq-app.com/sse/txout/groupby/myGroupName' target="_blank">Output Group Stream</a>
+
+
+```javascript
+
+id: -1
+data: ["connected"]
+
+id: 2
+data: {
+   "entity":{
+      "txid":"10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2",
+      "index":1,
+      "address":"131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW",
+      "scripthash":"525d063bd0c861fddc4d4881cb495038652bf432c9e2586cc37d49e98a3cc60e",
+      "script":"76a914161e9c31fbec37d9ecb297bf4b814c6e189dbe5288ac",
+      "satoshis":284442
+   },
+   "eventType":"txout"
+}
+
+```
+
 
 ## Merchant API Proxy (mapi)
 
