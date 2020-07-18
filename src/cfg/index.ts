@@ -10,7 +10,7 @@ if (!envFound) {
 const config: IConfig = {
   appname: 'txq',
   network: process.env.NETWORK === 'testnet' ? 'testnet' : 'livenet', // Set the merchantapi.endpoints below for testnet
-  baseurl: process.env.BASEURL || 'http://localhost',
+  baseurl: process.env.BASEURL || 'http://localhost:8097',
   env: process.env.NODE_ENV || 'development',
   api: {
     prefix: '/api',
@@ -52,6 +52,12 @@ const config: IConfig = {
     endpoints: {
       livenet: [
         {
+          name: 'merchantapi.matterpool.io',
+          url: 'https://merchantapi.matterpool.io',
+          headers: {
+          }
+        },
+        {
           name: 'merchantapi.taal.com',
           url: 'https://merchantapi.taal.com',
           headers: {
@@ -62,12 +68,6 @@ const config: IConfig = {
           url: 'https://www.ddpurse.com/openapi',
           headers: {
             token: "561b756d12572020ea9a104c3441b71790acbbce95a6ddbf7e0630971af9424b"
-          }
-        },
-        {
-          name: 'merchantapi.matterpool.io',
-          url: 'https://merchantapi.matterpool.io',
-          headers: {
           }
         }
       ],

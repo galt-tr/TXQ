@@ -12,7 +12,7 @@ export default class GetTxoutsByGroup extends UseCase {
   }
 
   public async run(params: { groupname: string, script?: boolean, offset: any, limit: any, unspent?: boolean}): Promise<UseCaseOutcome> {
-    let entities = await this.txoutService.getTxoutsByGroup(params.groupname, params.script, params.offset, params.limit, params.unspent);
+    let entities = await this.txoutService.getTxoutsByGroup(params);
     return {
       success: true,
       result: entities

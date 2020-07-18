@@ -162,7 +162,6 @@ export default class SaveTxs extends UseCase {
         savedTxs.push(expectedTxid);
         let useCaseOutcome = await this.getTx.run({ txid: expectedTxid, channel: cleanedChannel, rawtx: true});
         for (const item of notifyWithEntities) {
-          console.log('no  notify', item);
           const scriptIds = [];
           if (item.address) {
             scriptIds.push(item.address);

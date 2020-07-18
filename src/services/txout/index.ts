@@ -21,8 +21,20 @@ export default class TxoutService {
     return entity;
   }
 
-  public async getTxoutsByGroup(groupname: string, script: boolean, offset: number, limit: number, unspent: boolean) {
-    return await this.txoutModel.getTxoutsByGroup(groupname, offset, limit, script, unspent);
+  public async getTxoutsByGroup(params: { groupname: string, script?: boolean, limit: any, offset: any, unspent?: boolean}) {
+    return await this.txoutModel.getTxoutsByGroup(params);
+  }
+
+  public async getBalanceByAddresses(addresses: string[]) {
+    return await this.txoutModel.getUtxoBalanceByAddresses(addresses);
+  }
+
+  public async getBalanceByScriptHashes(scripthashes: string[]) {
+    return await this.txoutModel.getUtxoBalanceByScriptHashes(scripthashes);
+  }
+
+  public async getUtxoBalanceByGroup(groupname: string) {
+    return await this.txoutModel.getUtxoBalanceByGroup(groupname);
   }
 
   public async getTxout(txid: string, index: number, script?: boolean) {

@@ -103,7 +103,7 @@ export default [
     ],
   },
   {
-    path: `${ssePath}/txout/groupby/:groupname`,
+    path: `${ssePath}/txout/group/:groupname`,
     method: 'get',
     handler: [
       async (Req: Request, res: Response, next: NextFunction) => {

@@ -10,8 +10,8 @@ export default class GetUtxosByGroup extends UseCase {
     super();
   }
 
-  public async run(params: { groupname: string, script?: boolean,  limit: any, offset: any }): Promise<UseCaseOutcome> {
-    let entities = await this.txoutService.getTxoutsByGroup(params.groupname, params.offset, params.limit, params.script, true);
+  public async run(params: { groupname: string, script?: boolean, limit: any, offset: any }): Promise<UseCaseOutcome> {
+    let entities = await this.txoutService.getTxoutsByGroup({ ...params, unspent: true});
     let utxoFormatted = [];
     utxoFormatted = entities.map((e) => {
       return {

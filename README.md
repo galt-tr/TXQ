@@ -32,16 +32,16 @@
   * [Get Outpoints Spend Status (Batch)](#get-outpoints-spend-status--batch-)
   * [Get Address Outputs](#get-address-outputs)
   * [Get Address Unspent Outputs (UTXO)](#get-address-unspent-outputs--utxo-)
-  * [Get Balance By Address (Coming soon)](#get-balance-by-address--coming-soon-)
+  * [Get Balance By Address](#get-balance-by-address)
   * [Get Scripthash Outputs](#get-scripthash-outputs)
   * [Get Scripthash Unspent Outputs (UTXO)](#get-scripthash-unspent-outputs--utxo-)
-  * [Get Balance By Scripthash  (Coming soon)](#get-balance-by-scripthash---coming-soon-)
+  * [Get Balance By Scripthash](#get-balance-by-scripthash)
   * [Add Address or Scripthash to Output Group](#add-address-or-scripthash-to-output-group)
   * [Get Output Group](#get-output-group)
   * [Delete Address or Scripthash from Output Group](#delete-address-or-scripthash-from-output-group)
   * [Get Outputs By Group](#get-outputs-by-group)
   * [Get Unspent Outputs By Group (UTXO)](#get-unspent-outputs-by-group--utxo-)
-  * [Get Balance By Group (Coming soon)](#get-balance-by-group--coming-soon-)
+  * [Get Balance By Group](#get-balance-by-group)
   * [Get Queue Stats](#get-queue-stats)
   * [Get Dead-Letter Transactions Queue](#get-dead-letter-transactions-queue)
   * [Force Resync of Transaction](#force-resync-of-transaction)
@@ -54,6 +54,7 @@
   * [Merchant API Log Stream](#merchant-api-log-stream)
   * [Address Updates Stream](#address-updates-stream)
   * [Scripthash Updates Stream](#scripthash-updates-stream)
+  * [Output Group Updates Stream](#output-group-updates-stream)
 - [Merchant API Proxy (mapi)](#merchant-api-proxy--mapi-)
   * [Storing `channel`, `metadata`, and `tags`](#storing--channel----metadata---and--tags-)
   * [Query Primary Miner Merchant API](#query-primary-miner-merchant-api)
@@ -61,6 +62,7 @@
   * [Query by Index of Miner Merchant API](#query-by-index-of-miner-merchant-api)
 - [Database Schema and Design](#database-schema-and-design)
 - [Additional Resources](#additional-resources)
+
 
 
 ## Motivation
@@ -681,7 +683,7 @@ Retrieve outputs involving address. Note: receives are tracked only for now.
 }
 ```
 
-### Get Balance By Address (Coming soon)
+### Get Balance By Address
 
 `GET /api/v1/txout/address/:addresses/balance?pretty=1`
 
@@ -778,7 +780,7 @@ Retrieve outputs involving scripthash. Note: receives are tracked only for now.
 }
 ```
 
-### Get Balance By Scripthash  (Coming soon)
+### Get Balance By Scripthash
 
 `GET /api/v1/txout/scripthash/:scripthashes/balance?pretty=1`
 
@@ -871,7 +873,7 @@ Delete the addreses and scripthashes from the group
 
 *NOTE:* Requires creating a group using the Output Group API calls.
 
-`GET /api/v1/txout/groupby/:groupname?pretty=1&offset=0&limit=1000&script=1`
+`GET /api/v1/txout/group/:groupname?pretty=1&offset=0&limit=1000&script=1`
 
 Params:
 - offset: Skip this many outputs
@@ -905,7 +907,7 @@ Retrieve outputs that share a address or scripthash with the txoutgroup.scriptid
 
 *NOTE:* Requires creating a group using the Output Group API calls.
 
-`GET /api/v1/txout/groupby/:groupname/utxo?pretty=1&offset=0&limit=1000&script=1`
+`GET /api/v1/txout/group/:groupname/utxo?pretty=1&offset=0&limit=1000&script=1`
 
 Params:
 - offset: Skip this many outputs
@@ -935,11 +937,11 @@ Retrieve unspent outputs that share a address or scripthash with the txoutgroup.
 }
 ```
 
-### Get Balance By Group (Coming soon)
+### Get Balance By Group
 
 *NOTE:* Requires creating a group using the Output Group API calls.
 
-`GET /api/v1/txout/groupby/:groupname/balance?pretty=1`
+`GET /api/v1/txout/group/:groupname/balance?pretty=1`
 
 Params:
 - pretty: whether to pretty print
@@ -1068,7 +1070,7 @@ Example streams:
 - <a href='https://public.txq-app.com/sse/merchantapilogs' target="_blank">Merchant API Log</a>
 - <a href='https://public.txq-app.com/sse/txout/address/131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW' target="_blank">Address Updates</a>
 - <a href='https://public.txq-app.com/sse/txout/scripthash/ee7beac2fcc315b37f190530d743769f255b1d413edd6e51bbc003022753f909' target="_blank">Scripthash Updates</a>
-- <a href='https://public.txq-app.com/sse/txout/groupby/myGroupName' target="_blank">Output Group Updates</a>
+- <a href='https://public.txq-app.com/sse/txout/group/myGroupName' target="_blank">Output Group Updates</a>
 
 ### New Transactions Stream (Default channel)
 
@@ -1515,9 +1517,9 @@ data: {
 
 Stream all newly created outputs by whether the scriphash or address (of each output of the tx) matches any Output Group ('Txoutgroup')
 
-`GET /sse/txout/groupby/:groupname` (SSE)
+`GET /sse/txout/group/:groupname` (SSE)
 
-Example: <a href='https://public.txq-app.com/sse/txout/groupby/myGroupName' target="_blank">Output Group Stream</a>
+Example: <a href='https://public.txq-app.com/sse/txout/group/myGroupName' target="_blank">Output Group Stream</a>
 
 
 ```javascript

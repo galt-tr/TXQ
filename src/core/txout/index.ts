@@ -79,62 +79,177 @@ class TxoutModel {
     return result.rows;
   }
 
-  public async getTxoutsByGroup(groupname: string, offset: number, limit: number, script?: boolean, unspent?: boolean): Promise<any> {
+  /**
+   * Todo: Refactor to not repeat queries
+   */
+  public async getTxoutsByGroup(params: { groupname: string, script?: boolean, limit: any, offset: any, unspent?: boolean}): Promise<any> {
     let result: any;
-    if (script) {
-      if (unspent) {
-        result = await this.db.query(sql`
+    let q;
+    if (params.script) {
+      if (params.unspent) {
+        q = sql`
         SELECT txout.txid, index, address, scripthash, satoshis, spend_txid, spend_index, script FROM txout, txoutgroup
         WHERE
-        txoutgroup.groupname =${groupname} AND
+        txoutgroup.groupname = ${params.groupname} AND
         (
           txoutgroup.scriptid = txout.address OR
           txoutgroup.scriptid = txout.scripthash
         ) AND
         spend_txid IS NULL
-        OFFSET ${offset}
-        LIMIT ${limit}`);
+        OFFSET ${params.offset}
+        LIMIT ${params.limit}`;
       } else {
-        result = await this.db.query(sql`
+        q = sql`
         SELECT txout.txid, index, address, scripthash, satoshis, spend_txid, spend_index, script FROM txout, txoutgroup
         WHERE
-        txoutgroup.groupname =${groupname} AND
+        txoutgroup.groupname = ${params.groupname} AND
         (
           txoutgroup.scriptid = txout.address OR
           txoutgroup.scriptid = txout.scripthash
         )
-        OFFSET ${offset}
-        LIMIT ${limit}`);
+        OFFSET ${params.offset}
+        LIMIT ${params.limit}`;
       }
     } else {
-      if (unspent) {
-        result = await this.db.query(sql`
+      if (params.unspent) {
+        q = sql`
         SELECT txout.txid, index, address, scripthash, satoshis, spend_txid, spend_index
         FROM txout, txoutgroup
         WHERE
-        txoutgroup.groupname =${groupname} AND
+        txoutgroup.groupname = ${params.groupname} AND
         (
           txoutgroup.scriptid = txout.address OR
           txoutgroup.scriptid = txout.scripthash
         ) AND
         spend_txid IS NULL
-        OFFSET ${offset}
-        LIMIT ${limit}`);
+        OFFSET ${params.offset}
+        LIMIT ${params.limit}`;
       } else {
-        result = await this.db.query(sql`
+        q = sql`
         SELECT txout.txid, index, address, scripthash, satoshis, spend_txid, spend_index
-      FROM txout, txoutgroup
+        FROM txout, txoutgroup
         WHERE
-        txoutgroup.groupname =${groupname} AND
+        txoutgroup.groupname = ${params.groupname} AND
         (
           txoutgroup.scriptid = txout.address OR
           txoutgroup.scriptid = txout.scripthash
         )
-        OFFSET ${offset}
-        LIMIT ${limit}`);
+        OFFSET ${params.offset}
+        LIMIT ${params.limit}`;
       }
     }
+    result = await this.db.query(q);
     return result.rows;
+  }
+
+  public async getUtxoBalanceByScriptHashes(scripthashes: string[]): Promise<any> {
+    let result: any;
+    const str = sql`
+      SELECT * FROM
+      (
+        SELECT sum(satoshis) as balance
+        FROM txout, tx
+        WHERE
+        txout.scripthash = ANY(${sql.array(scripthashes, 'varchar')}) AND
+        spend_txid IS NULL AND
+        txout.txid = tx.txid AND
+        tx.completed IS TRUE
+
+        UNION
+
+        SELECT sum(satoshis) as balance
+        FROM txout, tx
+        WHERE
+        txout.scripthash = ANY(${sql.array(scripthashes, 'varchar')}) AND
+        spend_txid IS NULL AND
+        txout.txid = tx.txid AND
+        tx.completed IS FALSE
+
+      ) AS q1
+    `;
+    result = await this.db.query(str);
+    let balance = {
+      confirmed: result.rows[0].balance ? result.rows[0].balance : 0,
+      unconfirmed: result.rows[1] && result.rows[1].balance ? result.rows[1].balance : 0,
+    }
+    return balance;
+  }
+
+  public async getUtxoBalanceByAddresses(addresses: string[]): Promise<any> {
+    let result: any;
+    const str = sql`
+      SELECT * FROM
+      (
+        SELECT sum(satoshis) as balance
+        FROM txout, tx
+        WHERE
+        txout.address = ANY(${sql.array(addresses, 'varchar')}) AND
+        spend_txid IS NULL AND
+        txout.txid = tx.txid AND
+        tx.completed IS TRUE
+
+        UNION
+
+        SELECT sum(satoshis) as balance
+        FROM txout, tx
+        WHERE
+        txout.address = ANY(${sql.array(addresses, 'varchar')}) AND
+        spend_txid IS NULL AND
+        txout.txid = tx.txid AND
+        tx.completed IS FALSE
+
+      ) AS q1
+    `;
+    result = await this.db.query(str);
+    let balance = {
+      confirmed: result.rows[0].balance ? result.rows[0].balance : 0,
+      unconfirmed: result.rows[1] && result.rows[1].balance ? result.rows[1].balance : 0,
+    }
+    return balance;
+  }
+
+  /**
+   * Todo: Refactor to not repeat queries
+   */
+  public async getUtxoBalanceByGroup(groupname: string): Promise<any> {
+    let result: any;
+    const str = sql`
+      SELECT * FROM
+      (
+        SELECT sum(satoshis) as balance
+        FROM txout, txoutgroup, tx
+        WHERE
+        txoutgroup.groupname = ${groupname} AND
+        (
+          txoutgroup.scriptid = txout.address OR
+          txoutgroup.scriptid = txout.scripthash
+        ) AND
+        spend_txid IS NULL AND
+        txout.txid = tx.txid AND
+        tx.completed IS TRUE
+
+        UNION
+
+        SELECT sum(satoshis) as balance
+        FROM txout, txoutgroup, tx
+        WHERE
+        txoutgroup.groupname = ${groupname} AND
+        (
+          txoutgroup.scriptid = txout.address OR
+          txoutgroup.scriptid = txout.scripthash
+        ) AND
+        spend_txid IS NULL AND
+        txout.txid = tx.txid AND
+        tx.completed IS FALSE
+
+      ) AS q1
+    `;
+    result = await this.db.query(str);
+    let balance = {
+      confirmed: result.rows[0].balance ? result.rows[0].balance : 0,
+      unconfirmed: result.rows[1] && result.rows[1].balance ? result.rows[1].balance : 0,
+    }
+    return balance;
   }
 
   public async getTxout(txid: string, index: number, script?: boolean): Promise<string> {

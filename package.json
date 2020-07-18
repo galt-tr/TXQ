@@ -1,7 +1,7 @@
 {
   "name": "txq",
-  "version": "1.4.22",
-  "description": "TXQ: Bitcoin Transaction Storage Queue Service",
+  "version": "1.4.23",
+  "description": "TXQ: Bitcoin Transaction Storage Queue",
   "main": "src/bootstrap/index",
   "license": "MIT",
   "scripts": {

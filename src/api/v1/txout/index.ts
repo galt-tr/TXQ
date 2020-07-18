@@ -12,6 +12,9 @@ import { sendErrorWrapper } from '../../../util/sendErrorWrapper';
 import GetTxoutsByOutpointArray from '../../../services/use_cases/spends/GetTxoutsByOutpointArray';
 import GetTxoutsByGroup from '../../../services/use_cases/spends/GetTxoutsByGroup';
 import GetUtxosByGroup from '../../../services/use_cases/spends/GetUtxosByGroup';
+import GetBalanceByGroup from '../../../services/use_cases/spends/GetBalanceByGroup';
+import GetBalanceByAddresses from '../../../services/use_cases/spends/GetBalanceByAddresses';
+import GetBalanceByScriptHashes from '../../../services/use_cases/spends/GetBalanceByScriptHashes';
 
 export default [
   {
@@ -63,6 +66,44 @@ export default [
     ],
   },
   {
+    path: `${path}/txout/scripthash/:scripthash/balance`,
+    method: 'get',
+    handler: [
+      async (Req: Request, res: Response, next: NextFunction) => {
+        try {
+          let uc = Container.get(GetBalanceByScriptHashes);
+          let data = await uc.run({
+            scripthash: Req.params.scripthash
+          });
+          sendResponseWrapper(Req, res, 200, data.result);
+        } catch (error) {
+          next(error);
+        }
+      },
+    ],
+  },
+  {
+    path: `${path}/txout/scripthash/:scripthash/utxo`,
+    method: 'get',
+    handler: [
+      async (Req: Request, res: Response, next: NextFunction) => {
+        try {
+          let getUtxosByScriptHash = Container.get(GetUtxosByScriptHash);
+          let data = await getUtxosByScriptHash.run({
+            scripthash: Req.params.scripthash,
+            limit: Req.query.limit ? Req.query.limit : 1000,
+            offset: Req.query.offset ? Req.query.offset : 0,
+          });
+
+          sendResponseWrapper(Req, res, 200, data.result);
+
+        } catch (error) {
+          next(error);
+        }
+      },
+    ],
+  },
+  {
     path: `${path}/txout/scripthash/:scripthash`,
     method: 'get',
     handler: [
@@ -84,14 +125,31 @@ export default [
     ],
   },
   {
-    path: `${path}/txout/scripthash/:scripthash/utxo`,
+    path: `${path}/txout/address/:address/balance`,
     method: 'get',
     handler: [
       async (Req: Request, res: Response, next: NextFunction) => {
         try {
-          let getUtxosByScriptHash = Container.get(GetUtxosByScriptHash);
-          let data = await getUtxosByScriptHash.run({
-            scripthash: Req.params.scripthash,
+          let uc = Container.get(GetBalanceByAddresses);
+          let data = await uc.run({
+            address: Req.params.address
+          });
+          sendResponseWrapper(Req, res, 200, data.result);
+        } catch (error) {
+          next(error);
+        }
+      },
+    ],
+  },
+  {
+    path: `${path}/txout/address/:address/utxo`,
+    method: 'get',
+    handler: [
+      async (Req: Request, res: Response, next: NextFunction) => {
+        try {
+          let uc = Container.get(GetUtxosByAddress);
+          let data = await uc.run({
+            address: Req.params.address,
             limit: Req.query.limit ? Req.query.limit : 1000,
             offset: Req.query.offset ? Req.query.offset : 0,
           });
@@ -128,49 +186,6 @@ export default [
     ],
   },
   {
-    path: `${path}/txout/address/:address/utxo`,
-    method: 'get',
-    handler: [
-      async (Req: Request, res: Response, next: NextFunction) => {
-        try {
-          let getUtxosByAddress = Container.get(GetUtxosByAddress);
-          let data = await getUtxosByAddress.run({
-            address: Req.params.address,
-            limit: Req.query.limit ? Req.query.limit : 1000,
-            script: Req.query.script === '0' ? false : true,
-            offset: Req.query.offset ? Req.query.offset : 0
-          });
-
-          sendResponseWrapper(Req, res, 200, data.result);
-
-        } catch (error) {
-          next(error);
-        }
-      },
-    ],
-  },
-  {
-    path: `${path}/txout/groupby/:groupname`,
-    method: 'get',
-    handler: [
-      async (Req: Request, res: Response, next: NextFunction) => {
-        try {
-          let uc = Container.get(GetTxoutsByGroup);
-          let data = await uc.run({
-            groupname: Req.params.groupname,
-            limit: Req.query.limit ? Req.query.limit : 1000,
-            script: Req.query.script === '0' ? false : true,
-            offset: Req.query.offset ? Req.query.offset : 0
-          });
-          sendResponseWrapper(Req, res, 200, data.result);
-
-        } catch (error) {
-          next(error);
-        }
-      },
-    ],
-  },
-  {
     path: `${path}/txout/group/:groupname/utxo`,
     method: 'get',
     handler: [
@@ -189,19 +204,16 @@ export default [
         }
       },
     ],
-  },/*
+  },
   {
-    path: `${path}/txout/group/:groupname/utxo/balance`,
+    path: `${path}/txout/group/:groupname/balance`,
     method: 'get',
     handler: [
       async (Req: Request, res: Response, next: NextFunction) => {
         try {
-          let uc = Container.get(GetUtxosBalanceByGroupsArray);
+          let uc = Container.get(GetBalanceByGroup);
           let data = await uc.run({
-            address: Req.params.address,
-            limit: Req.query.limit ? Req.query.limit : 1000,
-            script: Req.query.script === '0' ? false : true,
-            offset: Req.query.offset ? Req.query.offset : 0
+            groupname: Req.params.groupname
           });
           sendResponseWrapper(Req, res, 200, data.result);
         } catch (error) {
@@ -209,5 +221,26 @@ export default [
         }
       },
     ],
-  },*/
+  },
+  {
+    path: `${path}/txout/group/:groupname`,
+    method: 'get',
+    handler: [
+      async (Req: Request, res: Response, next: NextFunction) => {
+        try {
+          let uc = Container.get(GetTxoutsByGroup);
+          let data = await uc.run({
+            groupname: Req.params.groupname,
+            limit: Req.query.limit ? Req.query.limit : 1000,
+            script: Req.query.script === '0' ? false : true,
+            offset: Req.query.offset ? Req.query.offset : 0
+          });
+          sendResponseWrapper(Req, res, 200, data.result);
+
+        } catch (error) {
+          next(error);
+        }
+      },
+    ],
+  }
 ];

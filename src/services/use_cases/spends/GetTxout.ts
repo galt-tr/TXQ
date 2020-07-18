@@ -18,9 +18,11 @@ export default class GetTxout extends UseCase {
     }
     return {
       success: true,
-      result: {
-        ...entity
-      }
+      result: [
+        {
+          ...entity
+        }
+      ]
     };
   }
 }
