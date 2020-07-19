@@ -225,7 +225,7 @@ See `cfg/index.ts` for available options.
 
 ## Why use TXQ?
 
-**TL;DR**: Sending transactions is now "fire and forget". TLQ is a concurrent work queue that synchronizes transaction status with miners automatically — so you, the developer, do not have to worry it. TXQ complements your infrastructure and gives you full control over your apps slice of the BSV blockchain universe. Out-of-the-box you have your own TX and UTXO indexer for addresses, scripthashes, outpoints and spend indexes. Transaction processors (miners) now can focus on building and time-stamping blocks and leave it to apps to backup and own their own transaction data.
+**TL;DR**: Sending transactions is now "fire and forget". TXQ is a concurrent work queue that synchronizes transaction status with miners automatically — so you, the developer, do not have to worry it. TXQ complements your infrastructure and gives you full control over your apps slice of the BSV blockchain universe. Out-of-the-box you have your own TX and UTXO indexer for addresses, scripthashes, outpoints and spend indexes. Transaction processors (miners) now can focus on building and time-stamping blocks and leave it to apps to backup and own their own transaction data.
 
 Up until now, Bitcoin SV "apps" relied on miners and blockchain cloudhosting services to get UTXO and transaction data. TXQ means app developers do not need to rely on 3rd parties for UTXO and transaction data &mdash; as long as all transactions of interest are saved to TXQ. That's it.
 
