@@ -1690,6 +1690,91 @@ Response:
 }
 ```
 
+### Payment Channel Address Updates Stream
+
+Stream all newly created payment outputs (For new transactions) by address.
+
+`GET /sse/paymentchannel/address/:address` (SSE)
+
+Example: <a href='https://public.txq-app.com/sse/paymentchannel/address/131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW' target="_blank">Payment Channel Address Stream</a>
+
+```javascript
+
+id: -1
+data: ["connected"]
+
+id: 2
+data: {
+   "entity":{
+      "txid":"10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2",
+      "index":1,
+      "address":"131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW",
+      "scripthash":"525d063bd0c861fddc4d4881cb495038652bf432c9e2586cc37d49e98a3cc60e",
+      "script":"76a914161e9c31fbec37d9ecb297bf4b814c6e189dbe5288ac",
+      "satoshis":284442
+   },
+   "eventType":"paymentchanneltxout"
+}
+
+```
+
+
+### Payment Channel ScriptHash Updates Stream
+
+Stream all newly created payment outputs (For new transactions) by scripthashes.
+
+`GET /sse/paymentchannel/scripthash/:scripthash` (SSE)
+
+Example: <a href='https://public.txq-app.com/sse/paymentchannel/scripthash/525d063bd0c861fddc4d4881cb495038652bf432c9e2586cc37d49e98a3cc60e' target="_blank">Payment Channel ScriptHash Stream</a>
+
+```javascript
+
+id: -1
+data: ["connected"]
+
+id: 2
+data: {
+   "entity":{
+      "txid":"10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2",
+      "index":1,
+      "address":"131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW",
+      "scripthash":"525d063bd0c861fddc4d4881cb495038652bf432c9e2586cc37d49e98a3cc60e",
+      "script":"76a914161e9c31fbec37d9ecb297bf4b814c6e189dbe5288ac",
+      "satoshis":284442
+   },
+   "eventType":"paymentchanneltxout"
+}
+
+```
+
+### Payment Channel By Output Group Updates Stream
+
+Stream all newly created payment outputs (For new transactions) by groups (ie: Output Group scripthash or addresses)
+
+`GET /sse/paymentchannel/group/:groupname` (SSE)
+
+Example: <a href='https://public.txq-app.com/sse/paymentchannel/group/mygroupname' target="_blank">Payment Channel By Output Group Stream</a>
+
+```javascript
+
+id: -1
+data: ["connected"]
+
+id: 2
+data: {
+   "entity":{
+      "txid":"10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2",
+      "index":1,
+      "address":"131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW",
+      "scripthash":"525d063bd0c861fddc4d4881cb495038652bf432c9e2586cc37d49e98a3cc60e",
+      "script":"76a914161e9c31fbec37d9ecb297bf4b814c6e189dbe5288ac",
+      "satoshis":284442
+   },
+   "eventType":"paymentchanneltxout"
+}
+
+```
+
 ## Merchant API Proxy (mapi)
 
 **Motivation**
