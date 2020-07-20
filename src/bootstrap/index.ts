@@ -51,11 +51,6 @@ import "../services/use_cases/txoutgroup/GetTxoutgroupByName";
 import "../services/use_cases/txoutgroup/AddGroupScriptIds";
 import "../services/use_cases/txoutgroup/DeleteGroupScriptIds";
 
-import SaveProxyRequestResponse from '../services/use_cases/proxy/SaveProxyRequestResponse';
-import ProxyAndSaveRequestIfCheckStatus  from '../services/use_cases/proxy/ProxyAndSaveRequestIfCheckStatus';
-import { MerchantEndpointNetworkSelector } from '../services/helpers/MerchantEndpointNetworkSelector';
-
-
 SetTimeZone('UTC');
 
 import EnqInitialTxsForSync from '../services/use_cases/tx/EnqInitialTxsForSync';
