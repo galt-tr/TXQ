@@ -1,7 +1,11 @@
 import { Service, Inject } from 'typedi';
 import { Response, Request } from 'express';
 import { SSEHandler } from '../../services/helpers/SSEHandler';
-import * as bsv from 'bsv';
+
+export enum EventTypes {
+  updatetx = 'updatetx',
+  newtx = 'newtx',
+}
 
 export interface SessionSSEPayload {
   id: number,
