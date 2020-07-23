@@ -6,6 +6,7 @@ import InvalidParamError from '../../error/InvalidParamError';
 import TxhashMismatchError from '../../error/TxhashMismatchError';
 import { BitcoinRegex } from '../../helpers/BitcoinRegex';
 import { ITransactionData } from '../../../interfaces/ITransactionData';
+import { EventTypes } from '../../../services/event';
 import { txDataExtractor } from '../../../util/txdataextractor';
 import Config from './../../../cfg';
 
@@ -178,17 +179,17 @@ export default class SaveTxs extends UseCase {
           }
         }
 
-        // Save to updatelogging if enabled
+        const entityNotif = { entity: useCaseOutcome.result, eventType: EventTypes.newtx};
         if (!didExistBefore) {
-          const wrappedEntity = { entity: useCaseOutcome.result, eventType: 'newtx'};
-          this.eventService.pushChannelEvent(cleanedChannel, wrappedEntity, useCaseOutcome.result.id);
-
+          this.eventService.pushChannelEvent(cleanedChannel, entityNotif, useCaseOutcome.result.id);
           if (Config.enableUpdateLogging) {
-            await this.updatelogService.save('newtx', cleanedChannel, useCaseOutcome.result, expectedTxid);
+            await this.updatelogService.save(EventTypes.newtx, cleanedChannel, useCaseOutcome.result, expectedTxid);
           }
         } else {
+          entityNotif.eventType = EventTypes.updatetx;
+          this.eventService.pushChannelEvent(cleanedChannel, entityNotif, useCaseOutcome.result.id);
           if (Config.enableUpdateLogging) {
-            await this.updatelogService.save('updatetx', cleanedChannel, useCaseOutcome.result, expectedTxid);
+            await this.updatelogService.save(EventTypes.updatetx, cleanedChannel, useCaseOutcome.result, expectedTxid);
           }
         }
 
