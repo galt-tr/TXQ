@@ -1542,6 +1542,238 @@ data: {
 
 ```
 
+## Payment Channels
+
+Nakamoto style transaction replacement channels are supported in TXQ.
+
+https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2013-April/002417.html
+
+Use payment channels when you wish to coordinate actions amongst 2 or more parties, but do not wish to settle the transaction until
+nLockTime and the final state of the data is acceptable
+
+Note: Payment "Channels" have nothing directly related to the queue channel name used in the TXQ api. The name 'paymentChannelId' is used to distinguish the usage. In context below 'paymentChannelId' is a global identifier (preferred random uuid) that can be used by the client
+to create, update, and manage the Nakamoto replacement payment channel.
+
+### Create Payment Channel
+
+Choose a globally unique identifier for `paymentChannel` and create it. Optionally provide a `rawtx` for the initial transaction statte.
+
+Once a payment channel is initialized with the first transaction, then all subsequent updates must use the same inputs and adhere to the rules
+regarding nSequence, nLockTime. See: https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2013-April/002417.html
+
+`POST /api/v1/paymentchannel/:paymentChannelId`
+
+```javascript
+{
+  "rawtx": '003222...' // Optional initial rawtx to initialize with. If left empty then use "Updates" to change
+}
+
+```
+
+### Add Transaction to Payment Channel
+
+`POST /api/v1/paymentchannel/:paymentChannelId/tx`
+
+```javascript
+{
+  "rawtx": '003222...' // Optional initial rawtx to initialize with. If left empty then use "Updates" to change
+}
+
+```
+
+Response:
+
+```javascript
+{
+  "status": 200,
+  "errors": [],
+  "result":  {
+    "closed": false,  // Whether the channel is closed manually or one of the inputs was spent by an actual tx broadcasted
+    "state": {
+      "id": 135,
+      "txid": "...",
+      "rawtx": "000022...",
+      "paymentchannelid": "my-id-payment-channel",
+      "updated_at": 1114554332,
+      "created_at": 1114554332
+    }
+  }
+}
+```
+
+### Get Payment Channel State
+
+`GET /api/v1/paymentchannel/:paymentchannelid`
+
+Response:
+
+```javascript
+{
+  "status": 200,
+  "errors": [],
+  "result":
+  {
+    "closed": false,  // Whether the channel is closed manually or one of the inputs was spent by an actual tx broadcasted
+    "state": {
+      "id": 135,
+      "txid": "...",
+      "rawtx": "000022...",
+      "paymentchannelid": "my-id-payment-channel",
+      "updated_at": 1114554332,
+      "created_at": 1114554332
+    }
+  }
+}
+```
+
+### Get Payment Channel History
+
+`GET /api/v1/paymentchannel/:paymentchannelid/history?limit=1000&offset=0`
+
+Return the chronological history of transactions posted to the payment channel.
+
+Response:
+
+```javascript
+{
+  "status": 200,
+  "errors": [],
+  "result": [
+    {
+      "id": 135,
+      "txid": "...",
+      "rawtx": "000022...",
+      "paymentchannelid": "my-id-payment-channel",
+      "updated_at": 1114554332,
+      "created_at": 1114554332,
+    },
+    {
+      "id": 125,
+      "txid": "...",
+      "rawtx": "000022...",
+      "paymentchannelid": "my-id-payment-channel",
+      "updated_at": 1114554332,
+      "created_at": 1114554332,
+    }
+  ]
+}
+```
+
+### Close Payment Channel
+
+`POST /api/v1/paymentchannel/:paymentchannelid/close`
+
+**Note:** The payment channel will automatically be closed if a transaction is broadcast via  `/mapi` or `/tx`
+when one of the inputs being spent collide with any transactions associated with a payment channel.
+
+Client may forcefully close payment channel without broadcasting a transaction. No further additional transactions may be added
+to a payment channel when it is `closed: true`
+
+Response:
+
+```javascript
+{
+  "status": 200,
+  "errors": [],
+  "result":
+  {
+    "closed": true,   // Force set to true
+    "state": {        // Return latest state if available
+      "id": 135,
+      "txid": "...",
+      "rawtx": "000022...",
+      "paymentchannelid": "my-id-payment-channel",
+      "updated_at": 1114554332,
+      "created_at": 1114554332
+    }
+  }
+}
+```
+
+### Payment Channel Address Updates Stream
+
+Stream all newly created payment outputs (For new transactions) by address.
+
+`GET /sse/paymentchannel/address/:address` (SSE)
+
+Example: <a href='https://public.txq-app.com/sse/paymentchannel/address/131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW' target="_blank">Payment Channel Address Stream</a>
+
+```javascript
+
+id: -1
+data: ["connected"]
+
+id: 2
+data: {
+   "entity":{
+      "txid":"10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2",
+      "index":1,
+      "address":"131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW",
+      "scripthash":"525d063bd0c861fddc4d4881cb495038652bf432c9e2586cc37d49e98a3cc60e",
+      "script":"76a914161e9c31fbec37d9ecb297bf4b814c6e189dbe5288ac",
+      "satoshis":284442
+   },
+   "eventType":"paymentchanneltxout"
+}
+
+```
+
+
+### Payment Channel ScriptHash Updates Stream
+
+Stream all newly created payment outputs (For new transactions) by scripthashes.
+
+`GET /sse/paymentchannel/scripthash/:scripthash` (SSE)
+
+Example: <a href='https://public.txq-app.com/sse/paymentchannel/scripthash/525d063bd0c861fddc4d4881cb495038652bf432c9e2586cc37d49e98a3cc60e' target="_blank">Payment Channel ScriptHash Stream</a>
+
+```javascript
+
+id: -1
+data: ["connected"]
+
+id: 2
+data: {
+   "entity":{
+      "txid":"10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2",
+      "index":1,
+      "address":"131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW",
+      "scripthash":"525d063bd0c861fddc4d4881cb495038652bf432c9e2586cc37d49e98a3cc60e",
+      "script":"76a914161e9c31fbec37d9ecb297bf4b814c6e189dbe5288ac",
+      "satoshis":284442
+   },
+   "eventType":"paymentchanneltxout"
+}
+
+```
+
+### Payment Channel By Output Group Updates Stream
+
+Stream all newly created payment outputs (For new transactions) by groups (ie: Output Group scripthash or addresses)
+
+`GET /sse/paymentchannel/group/:groupname` (SSE)
+
+Example: <a href='https://public.txq-app.com/sse/paymentchannel/group/mygroupname' target="_blank">Payment Channel By Output Group Stream</a>
+
+```javascript
+
+id: -1
+data: ["connected"]
+
+id: 2
+data: {
+   "entity":{
+      "txid":"10ad1739b568d2060831b91771d9b836e0f4efcb113d3a866732bbb9b8ca7ae2",
+      "index":1,
+      "address":"131xY3twRUJ1Y9Z9jJFKGLUa4SAdRJppcW",
+      "scripthash":"525d063bd0c861fddc4d4881cb495038652bf432c9e2586cc37d49e98a3cc60e",
+      "script":"76a914161e9c31fbec37d9ecb297bf4b814c6e189dbe5288ac",
+      "satoshis":284442
+   },
+   "eventType":"paymentchanneltxout"
+}
+
+```
 
 ## Merchant API Proxy (mapi)
 
